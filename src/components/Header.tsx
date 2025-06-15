@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Brain, Zap, ChevronDown, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,7 +23,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="relative">
               <Brain className="h-8 w-8 text-nvidia-green" />
               <Zap className="absolute -top-1 -right-1 h-4 w-4 text-nvidia-green-light animate-pulse" />
@@ -30,7 +31,7 @@ const Header = () => {
             <span className="text-2xl font-bold text-white">
               Easy AI <span className="text-nvidia-green">Labs</span>
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
@@ -129,7 +130,7 @@ const Header = () => {
               )}
             </div>
 
-            <a href="#enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</a>
+            <Link to="/enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</Link>
             <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
             
             {/* Partners Dropdown */}
@@ -198,7 +199,7 @@ const Header = () => {
             <nav className="flex flex-col space-y-4 mt-4">
               <a href="#solutions" className="text-white hover:text-nvidia-green transition-colors">Solutions</a>
               <a href="#platform" className="text-white hover:text-nvidia-green transition-colors">Platform</a>
-              <a href="#enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</a>
+              <Link to="/enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</Link>
               <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
               <a href="#partners" className="text-white hover:text-nvidia-green transition-colors">Partners</a>
               <a href="#resources" className="text-white hover:text-nvidia-green transition-colors">Resources</a>
