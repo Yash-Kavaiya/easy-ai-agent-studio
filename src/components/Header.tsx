@@ -1,14 +1,20 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Brain, Zap, ChevronDown } from 'lucide-react';
+import { Menu, X, Brain, Zap, ChevronDown, ChevronRight } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<string | null>(null);
+  const [isSubDropdownOpen, setIsSubDropdownOpen] = useState<string | null>(null);
 
   const handleDropdownToggle = (dropdown: string) => {
     setIsDropdownOpen(isDropdownOpen === dropdown ? null : dropdown);
+    setIsSubDropdownOpen(null); // Close any open sub-dropdowns
+  };
+
+  const handleSubDropdownToggle = (subDropdown: string) => {
+    setIsSubDropdownOpen(isSubDropdownOpen === subDropdown ? null : subDropdown);
   };
 
   return (
@@ -38,12 +44,66 @@ const Header = () => {
                 <ChevronDown className="h-4 w-4" />
               </button>
               {isDropdownOpen === 'solutions' && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg z-50">
                   <div className="py-2">
                     <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Task Agents</a>
                     <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Voice Agents</a>
                     <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">SQL Agents</a>
                     <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Multi-Agent Orchestration</a>
+                    
+                    {/* By Industries Submenu */}
+                    <div className="relative">
+                      <button
+                        className="w-full flex items-center justify-between px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors"
+                        onClick={() => handleSubDropdownToggle('industries')}
+                      >
+                        <span>By Industries</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                      {isSubDropdownOpen === 'industries' && (
+                        <div className="absolute left-full top-0 ml-1 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg z-50">
+                          <div className="py-2">
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Banking</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Insurance</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Financial Services</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Healthcare</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Retail & E-commerce</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Manufacturing</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Real Estate</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Education</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Technology</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Legal Services</a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* By Functions Submenu */}
+                    <div className="relative">
+                      <button
+                        className="w-full flex items-center justify-between px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors"
+                        onClick={() => handleSubDropdownToggle('functions')}
+                      >
+                        <span>By Functions</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                      {isSubDropdownOpen === 'functions' && (
+                        <div className="absolute left-full top-0 ml-1 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg z-50">
+                          <div className="py-2">
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">HR</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Marketing</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Customer Service</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Sales</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Finance & Accounting</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Operations</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Product Management</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">IT & Development</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Procurement</a>
+                            <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Supply Chain</a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
