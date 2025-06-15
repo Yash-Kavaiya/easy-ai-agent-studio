@@ -175,9 +175,11 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg">
-              Agent Studio →
-            </Button>
+            <Link to="/studio">
+              <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg">
+                Agent Studio →
+              </Button>
+            </Link>
             <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105">
               Book a Demo
             </Button>
@@ -203,9 +205,11 @@ const Header = () => {
               <a href="#partners" className="text-white hover:text-nvidia-green transition-colors">Partners</a>
               <a href="#resources" className="text-white hover:text-nvidia-green transition-colors">Resources</a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-nvidia-gray-dark">
-                <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg w-fit">
-                  Agent Studio →
-                </Button>
+                <Link to="/studio">
+                  <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg w-fit">
+                    Agent Studio →
+                  </Button>
+                </Link>
                 <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg w-fit">
                   Book a Demo
                 </Button>
