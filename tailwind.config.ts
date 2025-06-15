@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				nvidia: {
+					green: '#76B900',
+					'green-light': '#89D400',
+					'green-dark': '#5B8C00',
+					black: '#0A0A0A',
+					'gray-dark': '#1A1A1A',
+					'gray-medium': '#2A2A2A',
+					'gray-light': '#404040'
 				}
 			},
 			borderRadius: {
@@ -84,11 +94,50 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'scale-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.95)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					}
+				},
+				'gradient-shift': {
+					'0%': {
+						backgroundPosition: '0% 50%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%'
+					},
+					'100%': {
+						backgroundPosition: '0% 50%'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'scale-in': 'scale-in 0.4s ease-out',
+				'gradient-shift': 'gradient-shift 3s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'nvidia-gradient': 'linear-gradient(135deg, #76B900 0%, #89D400 50%, #5B8C00 100%)',
+				'nvidia-gradient-dark': 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 50%, #2A2A2A 100%)',
+				'ai-gradient': 'linear-gradient(135deg, #76B900 0%, #89D400 25%, #76B900 50%, #5B8C00 75%, #76B900 100%)',
 			}
 		}
 	},
