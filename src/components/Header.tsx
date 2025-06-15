@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Brain, Zap, ChevronDown, ChevronRight } from 'lucide-react';
@@ -131,7 +130,7 @@ const Header = () => {
             </div>
 
             <Link to="/enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</Link>
-            <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
+            <Link to="/pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</Link>
             
             {/* Partners Dropdown */}
             <div className="relative">
@@ -200,7 +199,7 @@ const Header = () => {
               <a href="#solutions" className="text-white hover:text-nvidia-green transition-colors">Solutions</a>
               <a href="#platform" className="text-white hover:text-nvidia-green transition-colors">Platform</a>
               <Link to="/enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</Link>
-              <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
+              <Link to="/pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</Link>
               <a href="#partners" className="text-white hover:text-nvidia-green transition-colors">Partners</a>
               <a href="#resources" className="text-white hover:text-nvidia-green transition-colors">Resources</a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-nvidia-gray-dark">
