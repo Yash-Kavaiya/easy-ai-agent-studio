@@ -1,14 +1,12 @@
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import Header from "@/components/Header";
 
 const Studio = () => {
   return (
     <div className="min-h-screen bg-nvidia-black">
-      <Header />
       <SidebarProvider>
-        <div className="flex w-full pt-20">
+        <div className="flex w-full">
           <AppSidebar />
           <main className="flex-1 p-6">
             <SidebarTrigger className="mb-4" />
