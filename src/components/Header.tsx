@@ -1,13 +1,18 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Brain, Zap } from 'lucide-react';
+import { Menu, X, Brain, Zap, ChevronDown } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<string | null>(null);
+
+  const handleDropdownToggle = (dropdown: string) => {
+    setIsDropdownOpen(isDropdownOpen === dropdown ? null : dropdown);
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-nvidia-black/90 backdrop-blur-md border-b border-nvidia-gray-dark">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-nvidia-black/95 backdrop-blur-md border-b border-nvidia-gray-dark">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -22,24 +27,105 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-white hover:text-nvidia-green transition-colors">Home</a>
-            <a href="#features" className="text-white hover:text-nvidia-green transition-colors">Features</a>
-            <a href="#solutions" className="text-white hover:text-nvidia-green transition-colors">Solutions</a>
-            <a href="#about" className="text-white hover:text-nvidia-green transition-colors">About</a>
-            <a href="#contact" className="text-white hover:text-nvidia-green transition-colors">Contact</a>
+          <nav className="hidden lg:flex items-center space-x-6">
+            {/* Solutions Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center space-x-1 text-white hover:text-nvidia-green transition-colors"
+                onClick={() => handleDropdownToggle('solutions')}
+              >
+                <span>Solutions</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {isDropdownOpen === 'solutions' && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
+                  <div className="py-2">
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Task Agents</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Voice Agents</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">SQL Agents</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Multi-Agent Orchestration</a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Platform Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center space-x-1 text-white hover:text-nvidia-green transition-colors"
+                onClick={() => handleDropdownToggle('platform')}
+              >
+                <span>Platform</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {isDropdownOpen === 'platform' && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
+                  <div className="py-2">
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Agent Studio</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Responsible AI</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Enterprise</a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <a href="#enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</a>
+            <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
+            
+            {/* Partners Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center space-x-1 text-white hover:text-nvidia-green transition-colors"
+                onClick={() => handleDropdownToggle('partners')}
+              >
+                <span>Partners</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {isDropdownOpen === 'partners' && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
+                  <div className="py-2">
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Technology Partners</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Integration Partners</a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Resources Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center space-x-1 text-white hover:text-nvidia-green transition-colors"
+                onClick={() => handleDropdownToggle('resources')}
+              >
+                <span>Resources</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {isDropdownOpen === 'resources' && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
+                  <div className="py-2">
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Blog</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Case Studies</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Documentation</a>
+                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Webinars</a>
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Right Side Actions */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg">
+              Agent Studio →
+            </Button>
             <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105">
-              Get Started
+              Book a Demo
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-white"
+            className="lg:hidden text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -48,16 +134,22 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-nvidia-gray-dark">
+          <div className="lg:hidden mt-4 pb-4 border-t border-nvidia-gray-dark">
             <nav className="flex flex-col space-y-4 mt-4">
-              <a href="#home" className="text-white hover:text-nvidia-green transition-colors">Home</a>
-              <a href="#features" className="text-white hover:text-nvidia-green transition-colors">Features</a>
               <a href="#solutions" className="text-white hover:text-nvidia-green transition-colors">Solutions</a>
-              <a href="#about" className="text-white hover:text-nvidia-green transition-colors">About</a>
-              <a href="#contact" className="text-white hover:text-nvidia-green transition-colors">Contact</a>
-              <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg w-fit">
-                Get Started
-              </Button>
+              <a href="#platform" className="text-white hover:text-nvidia-green transition-colors">Platform</a>
+              <a href="#enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</a>
+              <a href="#pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</a>
+              <a href="#partners" className="text-white hover:text-nvidia-green transition-colors">Partners</a>
+              <a href="#resources" className="text-white hover:text-nvidia-green transition-colors">Resources</a>
+              <div className="flex flex-col space-y-2 pt-4 border-t border-nvidia-gray-dark">
+                <Button variant="outline" className="border-nvidia-green text-nvidia-green hover:bg-nvidia-green hover:text-nvidia-black font-semibold px-4 py-2 rounded-lg w-fit">
+                  Agent Studio →
+                </Button>
+                <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg w-fit">
+                  Book a Demo
+                </Button>
+              </div>
             </nav>
           </div>
         )}
