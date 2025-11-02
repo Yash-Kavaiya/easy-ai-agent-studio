@@ -1,6 +1,7 @@
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { WorkflowCanvas } from "@/components/WorkflowCanvas";
 
 const Studio = () => {
   return (
@@ -22,15 +23,9 @@ const Studio = () => {
 
               {/* Main Studio Content */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Agent Canvas */}
-                <div className="lg:col-span-2 bg-nvidia-gray-dark rounded-lg p-6 border border-nvidia-gray-medium">
-                  <h2 className="text-xl font-semibold text-white mb-4">Agent Canvas</h2>
-                  <div className="bg-nvidia-gray-medium rounded-lg h-96 flex items-center justify-center border-2 border-dashed border-nvidia-gray-light">
-                    <div className="text-center">
-                      <div className="text-4xl text-nvidia-green mb-4">🤖</div>
-                      <p className="text-gray-300">Drop components here to build your agent</p>
-                    </div>
-                  </div>
+                {/* Workflow Canvas */}
+                <div className="lg:col-span-2 bg-nvidia-gray-dark rounded-lg border border-nvidia-gray-medium overflow-hidden" style={{ height: '600px' }}>
+                  <WorkflowCanvas />
                 </div>
 
                 {/* Properties Panel */}
