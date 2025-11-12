@@ -1,136 +1,203 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, DragEvent, useEffect } from 'react';
 import ReactFlow, {
-  Node,
-  Edge,
-  addEdge,
   Background,
   Controls,
   Connection,
-  useNodesState,
-  useEdgesState,
   MarkerType,
   BackgroundVariant,
+  MiniMap,
+  NodeTypes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button } from './ui/button';
-import { Plus } from 'lucide-react';
+import { useWorkflowStore } from '@/store/workflowStore';
+import { AIAgentNode } from './studio/workflow/nodes/AIAgentNode';
+import { ToolNode } from './studio/workflow/nodes/ToolNode';
+import { ConditionNode } from './studio/workflow/nodes/ConditionNode';
+import { NodeType, WorkflowNode } from '@/types/workflow.types';
 
-const initialNodes: Node[] = [
+// Define custom node types
+const nodeTypes: NodeTypes = {
+  [NodeType.AI_AGENT]: AIAgentNode,
+  [NodeType.TOOL]: ToolNode,
+  [NodeType.CONDITION]: ConditionNode,
+};
+
+// Default nodes for new workflows
+const initialNodes: WorkflowNode[] = [
   {
-    id: '1',
-    type: 'input',
-    data: { label: 'Start' },
+    id: 'start-1',
+    type: NodeType.START,
     position: { x: 250, y: 50 },
-    style: { 
-      background: '#76B900', 
-      color: 'white', 
-      border: '2px solid #76B900',
-      borderRadius: '8px',
-      padding: '10px'
-    },
+    data: { label: 'Start' }
   },
   {
-    id: '2',
-    data: { label: 'AI Agent' },
+    id: 'agent-1',
+    type: NodeType.AI_AGENT,
     position: { x: 250, y: 150 },
-    style: { 
-      background: '#1a1a1a', 
-      color: 'white', 
-      border: '2px solid #76B900',
-      borderRadius: '8px',
-      padding: '10px'
-    },
+    data: {
+      label: 'AI Agent',
+      model: 'gpt-3.5-turbo',
+      systemPrompt: '',
+      temperature: 0.7,
+      maxTokens: 2048,
+      tools: []
+    }
   },
 ];
 
-const initialEdges: Edge[] = [
-  {
-    id: 'e1-2',
-    source: '1',
-    target: '2',
-    animated: true,
-    style: { stroke: '#76B900', strokeWidth: 2 },
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      color: '#76B900',
-    },
-  },
-];
+interface WorkflowCanvasProps {
+  workflowId?: string;
+}
 
-export const WorkflowCanvas = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [nodeId, setNodeId] = useState(3);
+export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
+  const {
+    getNodes,
+    setNodes,
+    getEdges,
+    setEdges,
+    onNodesChange,
+    onEdgesChange,
+    addNode,
+    addEdge: addEdgeToStore,
+    createWorkflow,
+    setActiveWorkflow
+  } = useWorkflowStore();
+
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const [currentWorkflowId, setCurrentWorkflowId] = useState<string | null>(null);
+
+  // Initialize workflow
+  useEffect(() => {
+    const id = workflowId || 'default-workflow';
+    createWorkflow(id);
+    setActiveWorkflow(id);
+    setCurrentWorkflowId(id);
+
+    // Set initial nodes if empty
+    const nodes = getNodes(id);
+    if (nodes.length === 0) {
+      setNodes(initialNodes, id);
+    }
+  }, [workflowId]);
+
+  const nodes = currentWorkflowId ? getNodes(currentWorkflowId) : [];
+  const edges = currentWorkflowId ? getEdges(currentWorkflowId) : [];
 
   const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            animated: true,
-            style: { stroke: '#76B900', strokeWidth: 2 },
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              color: '#76B900',
-            },
-          },
-          eds
-        )
-      ),
-    [setEdges]
+    (params: Connection) => {
+      if (!currentWorkflowId) return;
+      addEdgeToStore(params, currentWorkflowId);
+    },
+    [addEdgeToStore, currentWorkflowId]
   );
 
-  const addNode = () => {
-    const newNode: Node = {
-      id: `${nodeId}`,
-      data: { label: `Node ${nodeId}` },
-      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
-      style: { 
-        background: '#1a1a1a', 
-        color: 'white', 
-        border: '2px solid #76B900',
-        borderRadius: '8px',
-        padding: '10px'
-      },
-    };
-    setNodes((nds) => [...nds, newNode]);
-    setNodeId((id) => id + 1);
-  };
+  // Handle node drop
+  const onDrop = useCallback(
+    (event: DragEvent) => {
+      event.preventDefault();
+
+      if (!currentWorkflowId || !reactFlowInstance) return;
+
+      const nodeType = event.dataTransfer.getData('application/reactflow');
+      if (!nodeType) return;
+
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const id = `${nodeType}-${Date.now()}`;
+      const newNode: WorkflowNode = {
+        id,
+        type: nodeType as NodeType,
+        position,
+        data: {
+          label: nodeType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          ...(nodeType === NodeType.AI_AGENT && {
+            model: 'gpt-3.5-turbo',
+            systemPrompt: '',
+            temperature: 0.7,
+            maxTokens: 2048,
+            tools: []
+          }),
+          ...(nodeType === NodeType.TOOL && {
+            toolId: '',
+            parameters: {},
+            timeout: 30000
+          }),
+          ...(nodeType === NodeType.CONDITION && {
+            expression: '',
+            operator: 'equals' as const,
+            value: ''
+          })
+        }
+      };
+
+      addNode(newNode, currentWorkflowId);
+    },
+    [reactFlowInstance, addNode, currentWorkflowId]
+  );
+
+  const onDragOver = useCallback((event: DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
 
   return (
     <div className="h-full w-full relative">
-      <div className="absolute top-4 right-4 z-10">
-        <Button
-          onClick={addNode}
-          className="bg-nvidia-green hover:bg-nvidia-green/80 text-nvidia-black"
-          size="sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Node
-        </Button>
-      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        nodeTypes={nodeTypes}
+        onNodesChange={(changes) => currentWorkflowId && onNodesChange(changes, currentWorkflowId)}
+        onEdgesChange={(changes) => currentWorkflowId && onEdgesChange(changes, currentWorkflowId)}
         onConnect={onConnect}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onInit={setReactFlowInstance}
         fitView
+        defaultEdgeOptions={{
+          animated: true,
+          style: { stroke: '#76B900', strokeWidth: 2 },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: '#76B900',
+          },
+        }}
         style={{ background: '#0a0a0a' }}
       >
-        <Background 
-          variant={BackgroundVariant.Dots} 
-          gap={16} 
-          size={1} 
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={16}
+          size={1}
           color="#333"
         />
-        <Controls 
-          style={{ 
-            background: '#1a1a1a', 
+        <Controls
+          style={{
+            background: '#1a1a1a',
             border: '1px solid #333',
             borderRadius: '8px'
           }}
+        />
+        <MiniMap
+          nodeColor={(node) => {
+            switch (node.type) {
+              case NodeType.AI_AGENT:
+                return '#76B900';
+              case NodeType.TOOL:
+                return '#3b82f6';
+              case NodeType.CONDITION:
+                return '#f59e0b';
+              default:
+                return '#6b7280';
+            }
+          }}
+          style={{
+            background: '#1a1a1a',
+            border: '1px solid #333',
+            borderRadius: '8px'
+          }}
+          maskColor="rgba(0, 0, 0, 0.6)"
         />
       </ReactFlow>
     </div>

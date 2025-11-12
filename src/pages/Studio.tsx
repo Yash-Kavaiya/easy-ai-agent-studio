@@ -1,9 +1,20 @@
-
+import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppSidebar } from "@/components/AppSidebar";
 import { WorkflowCanvas } from "@/components/WorkflowCanvas";
+import { SettingsDialog } from "@/components/studio/settings/SettingsDialog";
+import { ProjectManager } from "@/components/studio/project/ProjectManager";
+import { ChatInterface } from "@/components/studio/chat/ChatInterface";
+import { ModelSelector } from "@/components/studio/model/ModelSelector";
+import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
+import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
+import { Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Studio = () => {
+  const [showSettings, setShowSettings] = useState(false);
+
   return (
     <div className="min-h-screen bg-nvidia-black">
       <SidebarProvider>
@@ -13,72 +24,81 @@ const Studio = () => {
             <SidebarTrigger className="mb-4" />
             <div className="max-w-6xl mx-auto">
               <div className="mb-8">
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  Easy AI <span className="text-nvidia-green">Studio</span>
-                </h1>
-                <p className="text-gray-300 text-lg">
-                  Build, test, and deploy AI agents with our intuitive visual editor
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-4xl font-bold text-white mb-4">
+                      Easy AI <span className="text-nvidia-green">Studio</span>
+                    </h1>
+                    <p className="text-gray-300 text-lg">
+                      Build, test, and deploy AI agents with our intuitive visual editor
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ProjectManager />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSettings(true)}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* Main Studio Content */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Workflow Canvas */}
-                <div className="lg:col-span-2 bg-nvidia-gray-dark rounded-lg border border-nvidia-gray-medium overflow-hidden" style={{ height: '600px' }}>
-                  <WorkflowCanvas />
-                </div>
+              <Tabs defaultValue="workflow" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-6">
+                  <TabsTrigger value="workflow">Workflow</TabsTrigger>
+                  <TabsTrigger value="chat">Chat</TabsTrigger>
+                  <TabsTrigger value="model">Model Config</TabsTrigger>
+                  <TabsTrigger value="tools">Tools</TabsTrigger>
+                </TabsList>
 
-                {/* Properties Panel */}
-                <div className="bg-nvidia-gray-dark rounded-lg p-6 border border-nvidia-gray-medium">
-                  <h2 className="text-xl font-semibold text-white mb-4">Properties</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Agent Name
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-3 py-2 bg-nvidia-gray-medium border border-nvidia-gray-light rounded-md text-white focus:outline-none focus:ring-2 focus:ring-nvidia-green"
-                        placeholder="My AI Agent"
-                      />
+                {/* Workflow Tab */}
+                <TabsContent value="workflow" className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Workflow Canvas */}
+                    <div className="lg:col-span-3 bg-nvidia-gray-dark rounded-lg border border-nvidia-gray-medium overflow-hidden" style={{ height: '600px' }}>
+                      <WorkflowCanvas />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Description
-                      </label>
-                      <textarea
-                        className="w-full px-3 py-2 bg-nvidia-gray-medium border border-nvidia-gray-light rounded-md text-white focus:outline-none focus:ring-2 focus:ring-nvidia-green h-24 resize-none"
-                        placeholder="Describe what your agent does..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Model
-                      </label>
-                      <select className="w-full px-3 py-2 bg-nvidia-gray-medium border border-nvidia-gray-light rounded-md text-white focus:outline-none focus:ring-2 focus:ring-nvidia-green">
-                        <option>GPT-4</option>
-                        <option>Claude-3</option>
-                        <option>Llama-2</option>
-                      </select>
+
+                    {/* Node Library */}
+                    <div style={{ height: '600px' }}>
+                      <NodeLibrary />
                     </div>
                   </div>
-                </div>
-              </div>
+                </TabsContent>
 
-              {/* Bottom Panel */}
-              <div className="mt-6 bg-nvidia-gray-dark rounded-lg p-6 border border-nvidia-gray-medium">
-                <h2 className="text-xl font-semibold text-white mb-4">Testing Console</h2>
-                <div className="bg-black rounded-lg p-4 h-32 overflow-y-auto">
-                  <div className="text-green-400 font-mono text-sm">
-                    <div>Agent Studio initialized...</div>
-                    <div>Ready to build your AI agent 🚀</div>
+                {/* Chat Tab */}
+                <TabsContent value="chat">
+                  <div style={{ height: '600px' }}>
+                    <ChatInterface />
                   </div>
-                </div>
-              </div>
+                </TabsContent>
+
+                {/* Model Config Tab */}
+                <TabsContent value="model">
+                  <div className="max-w-2xl mx-auto">
+                    <ModelSelector />
+                  </div>
+                </TabsContent>
+
+                {/* Tools Tab */}
+                <TabsContent value="tools">
+                  <div className="max-w-2xl mx-auto" style={{ height: '600px' }}>
+                    <ToolsLibrary />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           </main>
         </div>
       </SidebarProvider>
+
+      {/* Settings Dialog */}
+      <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
     </div>
   );
 };
