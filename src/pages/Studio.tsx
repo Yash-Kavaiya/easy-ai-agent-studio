@@ -9,6 +9,7 @@ import { ChatInterface } from "@/components/studio/chat/ChatInterface";
 import { ModelSelector } from "@/components/studio/model/ModelSelector";
 import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
 import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
+import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -49,9 +50,10 @@ const Studio = () => {
 
               {/* Main Studio Content */}
               <Tabs defaultValue="workflow" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsList className="grid w-full grid-cols-5 mb-6">
                   <TabsTrigger value="workflow">Workflow</TabsTrigger>
                   <TabsTrigger value="chat">Chat</TabsTrigger>
+                  <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
                   <TabsTrigger value="model">Model Config</TabsTrigger>
                   <TabsTrigger value="tools">Tools</TabsTrigger>
                 </TabsList>
@@ -76,6 +78,11 @@ const Studio = () => {
                   <div style={{ height: '600px' }}>
                     <ChatInterface />
                   </div>
+                </TabsContent>
+
+                {/* Knowledge Base Tab */}
+                <TabsContent value="knowledge">
+                  <KnowledgeBase />
                 </TabsContent>
 
                 {/* Model Config Tab */}
