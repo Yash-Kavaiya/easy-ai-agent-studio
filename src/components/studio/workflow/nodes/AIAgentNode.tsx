@@ -9,11 +9,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Settings } from 'lucide-react';
 import { AIAgentNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const AIAgentNode = memo(({ data, selected }: NodeProps<AIAgentNodeData>) => {
+export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[200px] ${
+      onClick={handleClick}
+      className={`min-w-[200px] cursor-pointer ${
         selected ? 'ring-2 ring-nvidia-green' : ''
       } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-colors`}
     >

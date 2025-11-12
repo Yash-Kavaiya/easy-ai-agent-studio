@@ -9,11 +9,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RotateCw } from 'lucide-react';
 import { LoopNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const LoopNode = memo(({ data, selected }: NodeProps<LoopNodeData>) => {
+export const LoopNode = memo(({ id, data, selected }: NodeProps<LoopNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[200px] ${
+      onClick={handleClick}
+      className={`min-w-[200px] cursor-pointer ${
         selected ? 'ring-2 ring-purple-500' : ''
       } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-purple-500 transition-colors`}
     >

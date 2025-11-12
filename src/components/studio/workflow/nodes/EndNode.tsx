@@ -8,11 +8,20 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { Card, CardContent } from '@/components/ui/card';
 import { CircleDot } from 'lucide-react';
 import { BaseNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const EndNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
+export const EndNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[140px] ${
+      onClick={handleClick}
+      className={`min-w-[140px] cursor-pointer ${
         selected ? 'ring-2 ring-node-end' : ''
       } bg-card border-node-end hover:border-node-end/80 transition-colors`}
     >

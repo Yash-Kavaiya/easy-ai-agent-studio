@@ -70,15 +70,20 @@ export interface ConditionNodeData extends BaseNodeData {
 
 export interface LoopNodeData extends BaseNodeData {
   iterableField: string;
+  iterable: string;
+  itemVariable: string;
   maxIterations: number;
 }
 
 export interface TransformNodeData extends BaseNodeData {
   transformType: 'map' | 'filter' | 'reduce' | 'custom';
   code: string;
+  transformScript: string;
+  outputMapping: Record<string, any>;
 }
 
 export interface KnowledgeNodeData extends BaseNodeData {
+  knowledgeBaseId: string;
   query: string;
   topK: number;
   threshold: number;
@@ -86,8 +91,9 @@ export interface KnowledgeNodeData extends BaseNodeData {
 
 export interface HumanInputNodeData extends BaseNodeData {
   prompt: string;
-  inputType: 'text' | 'choice' | 'file';
+  inputType: 'text' | 'number' | 'select' | 'choice' | 'file';
   options?: string[];
+  variableName: string;
 }
 
 // Workflow Execution Context

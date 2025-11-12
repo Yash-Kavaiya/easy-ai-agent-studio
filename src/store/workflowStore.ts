@@ -10,11 +10,13 @@ import { addEdge, applyNodeChanges, applyEdgeChanges, Connection, EdgeChange, No
 interface WorkflowStore {
   workflows: Record<string, WorkflowData>;
   activeWorkflowId: string | null;
+  selectedNodeId: string | null;
 
   // Actions
   createWorkflow: (id: string) => void;
   deleteWorkflow: (id: string) => void;
   setActiveWorkflow: (id: string) => void;
+  setSelectedNode: (nodeId: string | null) => void;
 
   // Node operations
   getNodes: (workflowId?: string) => WorkflowNode[];
@@ -41,6 +43,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
     (set, get) => ({
       workflows: {},
       activeWorkflowId: null,
+      selectedNodeId: null,
 
       createWorkflow: (id) => {
         set((state) => ({
@@ -64,6 +67,10 @@ export const useWorkflowStore = create<WorkflowStore>()(
 
       setActiveWorkflow: (id) => {
         set({ activeWorkflowId: id });
+      },
+
+      setSelectedNode: (nodeId) => {
+        set({ selectedNodeId: nodeId });
       },
 
       // Node operations
