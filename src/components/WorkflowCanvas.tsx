@@ -13,13 +13,27 @@ import { useWorkflowStore } from '@/store/workflowStore';
 import { AIAgentNode } from './studio/workflow/nodes/AIAgentNode';
 import { ToolNode } from './studio/workflow/nodes/ToolNode';
 import { ConditionNode } from './studio/workflow/nodes/ConditionNode';
+import { LoopNode } from './studio/workflow/nodes/LoopNode';
+import { TransformNode } from './studio/workflow/nodes/TransformNode';
+import { MergeNode } from './studio/workflow/nodes/MergeNode';
+import { KnowledgeNode } from './studio/workflow/nodes/KnowledgeNode';
+import { HumanInputNode } from './studio/workflow/nodes/HumanInputNode';
+import { StartNode } from './studio/workflow/nodes/StartNode';
+import { EndNode } from './studio/workflow/nodes/EndNode';
 import { NodeType, WorkflowNode } from '@/types/workflow.types';
 
 // Define custom node types
 const nodeTypes: NodeTypes = {
+  [NodeType.START]: StartNode,
   [NodeType.AI_AGENT]: AIAgentNode,
   [NodeType.TOOL]: ToolNode,
   [NodeType.CONDITION]: ConditionNode,
+  [NodeType.LOOP]: LoopNode,
+  [NodeType.TRANSFORM]: TransformNode,
+  [NodeType.MERGE]: MergeNode,
+  [NodeType.KNOWLEDGE]: KnowledgeNode,
+  [NodeType.HUMAN_INPUT]: HumanInputNode,
+  [NodeType.END]: EndNode,
 };
 
 // Default nodes for new workflows
@@ -107,30 +121,87 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
       });
 
       const id = `${nodeType}-${Date.now()}`;
+
+      // Helper to get default data for each node type
+      const getDefaultData = (type: string) => {
+        const baseData = {
+          label: type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+        };
+
+        switch (type as NodeType) {
+          case NodeType.START:
+          case NodeType.END:
+            return baseData;
+
+          case NodeType.AI_AGENT:
+            return {
+              ...baseData,
+              model: 'gpt-3.5-turbo',
+              systemPrompt: '',
+              temperature: 0.7,
+              maxTokens: 2048,
+              tools: []
+            };
+
+          case NodeType.TOOL:
+            return {
+              ...baseData,
+              toolId: '',
+              parameters: {},
+              timeout: 30000
+            };
+
+          case NodeType.CONDITION:
+            return {
+              ...baseData,
+              expression: '',
+              operator: 'equals' as const,
+              value: ''
+            };
+
+          case NodeType.LOOP:
+            return {
+              ...baseData,
+              iterableField: 'items',
+              maxIterations: 100
+            };
+
+          case NodeType.TRANSFORM:
+            return {
+              ...baseData,
+              transformType: 'custom' as const,
+              code: 'return input;'
+            };
+
+          case NodeType.KNOWLEDGE:
+            return {
+              ...baseData,
+              query: '',
+              topK: 5,
+              threshold: 0.7
+            };
+
+          case NodeType.HUMAN_INPUT:
+            return {
+              ...baseData,
+              prompt: 'Please provide input',
+              inputType: 'text' as const,
+              options: []
+            };
+
+          case NodeType.MERGE:
+            return baseData;
+
+          default:
+            return baseData;
+        }
+      };
+
       const newNode: WorkflowNode = {
         id,
         type: nodeType as NodeType,
         position,
-        data: {
-          label: nodeType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          ...(nodeType === NodeType.AI_AGENT && {
-            model: 'gpt-3.5-turbo',
-            systemPrompt: '',
-            temperature: 0.7,
-            maxTokens: 2048,
-            tools: []
-          }),
-          ...(nodeType === NodeType.TOOL && {
-            toolId: '',
-            parameters: {},
-            timeout: 30000
-          }),
-          ...(nodeType === NodeType.CONDITION && {
-            expression: '',
-            operator: 'equals' as const,
-            value: ''
-          })
-        }
+        data: getDefaultData(nodeType)
       };
 
       addNode(newNode, currentWorkflowId);
@@ -182,14 +253,28 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
         <MiniMap
           nodeColor={(node) => {
             switch (node.type) {
+              case NodeType.START:
+                return '#22c55e'; // green
               case NodeType.AI_AGENT:
-                return '#76B900';
+                return '#76B900'; // nvidia green
               case NodeType.TOOL:
-                return '#3b82f6';
+                return '#3b82f6'; // blue
               case NodeType.CONDITION:
-                return '#f59e0b';
+                return '#f59e0b'; // amber
+              case NodeType.LOOP:
+                return '#a855f7'; // purple
+              case NodeType.TRANSFORM:
+                return '#06b6d4'; // cyan
+              case NodeType.MERGE:
+                return '#ec4899'; // pink
+              case NodeType.KNOWLEDGE:
+                return '#6366f1'; // indigo
+              case NodeType.HUMAN_INPUT:
+                return '#f97316'; // orange
+              case NodeType.END:
+                return '#ef4444'; // red
               default:
-                return '#6b7280';
+                return '#6b7280'; // gray
             }
           }}
           style={{
