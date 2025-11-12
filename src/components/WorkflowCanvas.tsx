@@ -229,59 +229,49 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
         fitView
         defaultEdgeOptions={{
           animated: true,
-          style: { stroke: '#76B900', strokeWidth: 2 },
+          style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#76B900',
+            color: 'hsl(var(--primary))',
           },
         }}
-        style={{ background: '#0a0a0a' }}
+        className="bg-background"
       >
         <Background
           variant={BackgroundVariant.Dots}
           gap={16}
           size={1}
-          color="#333"
+          className="opacity-20"
         />
-        <Controls
-          style={{
-            background: '#1a1a1a',
-            border: '1px solid #333',
-            borderRadius: '8px'
-          }}
-        />
+        <Controls className="bg-card border-border rounded-lg" />
         <MiniMap
           nodeColor={(node) => {
             switch (node.type) {
               case NodeType.START:
-                return '#22c55e'; // green
+                return 'hsl(var(--node-start))';
               case NodeType.AI_AGENT:
-                return '#76B900'; // nvidia green
+                return 'hsl(var(--node-ai))';
               case NodeType.TOOL:
-                return '#3b82f6'; // blue
+                return 'hsl(var(--node-tool))';
               case NodeType.CONDITION:
-                return '#f59e0b'; // amber
+                return 'hsl(var(--node-condition))';
               case NodeType.LOOP:
-                return '#a855f7'; // purple
+                return 'hsl(var(--node-loop))';
               case NodeType.TRANSFORM:
-                return '#06b6d4'; // cyan
+                return 'hsl(var(--node-transform))';
               case NodeType.MERGE:
-                return '#ec4899'; // pink
+                return 'hsl(var(--node-merge))';
               case NodeType.KNOWLEDGE:
-                return '#6366f1'; // indigo
+                return 'hsl(var(--node-knowledge))';
               case NodeType.HUMAN_INPUT:
-                return '#f97316'; // orange
+                return 'hsl(var(--node-human))';
               case NodeType.END:
-                return '#ef4444'; // red
+                return 'hsl(var(--node-end))';
               default:
-                return '#6b7280'; // gray
+                return 'hsl(var(--muted))';
             }
           }}
-          style={{
-            background: '#1a1a1a',
-            border: '1px solid #333',
-            borderRadius: '8px'
-          }}
+          className="bg-card border-border rounded-lg"
           maskColor="rgba(0, 0, 0, 0.6)"
         />
       </ReactFlow>

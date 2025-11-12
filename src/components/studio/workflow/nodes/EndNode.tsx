@@ -13,15 +13,15 @@ export const EndNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
   return (
     <Card
       className={`min-w-[140px] ${
-        selected ? 'ring-2 ring-red-500' : ''
-      } bg-nvidia-gray-dark border-red-500 hover:border-red-400 transition-colors`}
+        selected ? 'ring-2 ring-node-end' : ''
+      } bg-card border-node-end hover:border-node-end/80 transition-colors`}
     >
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-red-500/20 rounded-full">
-            <CircleDot className="h-4 w-4 text-red-500" />
+          <div className="p-1.5 bg-node-end/20 rounded-full">
+            <CircleDot className="h-4 w-4 text-node-end" />
           </div>
-          <div className="font-medium text-sm text-red-500">
+          <div className="font-medium text-sm text-node-end">
             {data.label || 'End'}
           </div>
         </div>
@@ -35,7 +35,7 @@ export const EndNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
         <Handle
           type="target"
           position={Position.Left}
-          className="!bg-red-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
+          className="!bg-node-end !w-3 !h-3 !border-2 !border-card"
         />
       </CardContent>
     </Card>

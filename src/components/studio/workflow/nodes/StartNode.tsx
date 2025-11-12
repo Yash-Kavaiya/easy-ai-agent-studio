@@ -13,15 +13,15 @@ export const StartNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
   return (
     <Card
       className={`min-w-[140px] ${
-        selected ? 'ring-2 ring-green-500' : ''
-      } bg-nvidia-gray-dark border-green-500 hover:border-green-400 transition-colors`}
+        selected ? 'ring-2 ring-node-start' : ''
+      } bg-card border-node-start hover:border-node-start/80 transition-colors`}
     >
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-green-500/20 rounded-full">
-            <Circle className="h-4 w-4 text-green-500 fill-green-500" />
+          <div className="p-1.5 bg-node-start/20 rounded-full">
+            <Circle className="h-4 w-4 text-node-start fill-node-start" />
           </div>
-          <div className="font-medium text-sm text-green-500">
+          <div className="font-medium text-sm text-node-start">
             {data.label || 'Start'}
           </div>
         </div>
@@ -35,7 +35,7 @@ export const StartNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
         <Handle
           type="source"
           position={Position.Right}
-          className="!bg-green-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
+          className="!bg-node-start !w-3 !h-3 !border-2 !border-card"
         />
       </CardContent>
     </Card>

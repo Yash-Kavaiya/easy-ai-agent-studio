@@ -13,15 +13,15 @@ export const MergeNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
   return (
     <Card
       className={`min-w-[160px] ${
-        selected ? 'ring-2 ring-pink-500' : ''
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-pink-500 transition-colors`}
+        selected ? 'ring-2 ring-node-merge' : ''
+      } bg-card border-node-merge hover:border-node-merge/80 transition-colors`}
     >
       <CardContent className="p-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="p-1.5 bg-pink-500/20 rounded">
-            <GitMerge className="h-4 w-4 text-pink-500" />
+          <div className="p-1.5 bg-node-merge/20 rounded">
+            <GitMerge className="h-4 w-4 text-node-merge" />
           </div>
-          <div className="font-medium text-sm">{data.label || 'Merge'}</div>
+          <div className="font-medium text-sm text-node-merge">{data.label || 'Merge'}</div>
         </div>
 
         {data.description && (
@@ -35,19 +35,19 @@ export const MergeNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
           position={Position.Left}
           id="input-1"
           style={{ top: '30%' }}
-          className="!bg-pink-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
+          className="!bg-node-merge !w-3 !h-3 !border-2 !border-card"
         />
         <Handle
           type="target"
           position={Position.Left}
           id="input-2"
           style={{ top: '70%' }}
-          className="!bg-pink-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
+          className="!bg-node-merge !w-3 !h-3 !border-2 !border-card"
         />
         <Handle
           type="source"
           position={Position.Right}
-          className="!bg-pink-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
+          className="!bg-node-merge !w-3 !h-3 !border-2 !border-card"
         />
       </CardContent>
     </Card>

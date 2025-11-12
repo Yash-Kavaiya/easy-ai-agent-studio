@@ -20,6 +20,18 @@ export default {
 		},
 		extend: {
 			colors: {
+				node: {
+					start: 'hsl(var(--node-start))',
+					ai: 'hsl(var(--node-ai))',
+					tool: 'hsl(var(--node-tool))',
+					condition: 'hsl(var(--node-condition))',
+					loop: 'hsl(var(--node-loop))',
+					transform: 'hsl(var(--node-transform))',
+					merge: 'hsl(var(--node-merge))',
+					knowledge: 'hsl(var(--node-knowledge))',
+					human: 'hsl(var(--node-human))',
+					end: 'hsl(var(--node-end))',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
