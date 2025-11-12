@@ -9,11 +9,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Code } from 'lucide-react';
 import { TransformNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const TransformNode = memo(({ data, selected }: NodeProps<TransformNodeData>) => {
+export const TransformNode = memo(({ id, data, selected }: NodeProps<TransformNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[200px] ${
+      onClick={handleClick}
+      className={`min-w-[200px] cursor-pointer ${
         selected ? 'ring-2 ring-node-transform' : ''
       } bg-card border-node-transform hover:border-node-transform/80 transition-colors`}
     >

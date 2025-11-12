@@ -8,11 +8,20 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { Card, CardContent } from '@/components/ui/card';
 import { GitMerge } from 'lucide-react';
 import { BaseNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const MergeNode = memo(({ data, selected }: NodeProps<BaseNodeData>) => {
+export const MergeNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[160px] ${
+      onClick={handleClick}
+      className={`min-w-[160px] cursor-pointer ${
         selected ? 'ring-2 ring-node-merge' : ''
       } bg-card border-node-merge hover:border-node-merge/80 transition-colors`}
     >

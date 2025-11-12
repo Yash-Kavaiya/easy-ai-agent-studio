@@ -8,11 +8,18 @@ import { ModelSelector } from "@/components/studio/model/ModelSelector";
 import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
 import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
 import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
+import { NodeSettingsPanel } from "@/components/studio/workflow/NodeSettingsPanel";
+import { useWorkflowStore } from "@/store/workflowStore";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Studio = () => {
   const [showSettings, setShowSettings] = useState(false);
+  const { selectedNodeId, setSelectedNode } = useWorkflowStore();
+
+  const handleCloseNodeSettings = () => {
+    setSelectedNode(null);
+  };
 
   return (
     <div className="min-h-screen bg-nvidia-black">
@@ -100,6 +107,9 @@ const Studio = () => {
 
       {/* Settings Dialog */}
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
+
+      {/* Node Settings Panel */}
+      {selectedNodeId && <NodeSettingsPanel onClose={handleCloseNodeSettings} />}
     </div>
   );
 };

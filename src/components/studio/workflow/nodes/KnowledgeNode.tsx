@@ -9,11 +9,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Database } from 'lucide-react';
 import { KnowledgeNodeData } from '@/types/workflow.types';
+import { useWorkflowStore } from '@/store/workflowStore';
 
-export const KnowledgeNode = memo(({ data, selected }: NodeProps<KnowledgeNodeData>) => {
+export const KnowledgeNode = memo(({ id, data, selected }: NodeProps<KnowledgeNodeData>) => {
+  const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(id);
+  };
+
   return (
     <Card
-      className={`min-w-[200px] ${
+      onClick={handleClick}
+      className={`min-w-[200px] cursor-pointer ${
         selected ? 'ring-2 ring-indigo-500' : ''
       } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-indigo-500 transition-colors`}
     >
