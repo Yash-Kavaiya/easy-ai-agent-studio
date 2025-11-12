@@ -12,8 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ModelProvider, AVAILABLE_MODELS, ModelConfig } from '@/types/model.types';
-import { Brain, DollarSign, Zap, Eye } from 'lucide-react';
+import { ModelProvider, AVAILABLE_MODELS, NVIDIA_MODELS, ModelConfig } from '@/types/model.types';
+import { Brain, DollarSign, Zap, Eye, Cpu } from 'lucide-react';
 
 interface ModelSelectorProps {
   value?: ModelConfig;
@@ -30,12 +30,17 @@ export function ModelSelector({ value, onChange, showPlayground = false }: Model
   const [frequencyPenalty, setFrequencyPenalty] = useState(value?.frequencyPenalty || 0);
   const [presencePenalty, setPresencePenalty] = useState(value?.presencePenalty || 0);
 
-  const models = AVAILABLE_MODELS[provider] || [];
+  // Combine available models with NVIDIA models for 'custom' provider
+  const models = provider === 'custom'
+    ? NVIDIA_MODELS
+    : AVAILABLE_MODELS[provider] || [];
   const modelInfo = models.find((m) => m.id === selectedModel);
 
   const handleProviderChange = (newProvider: ModelProvider) => {
     setProvider(newProvider);
-    const firstModel = AVAILABLE_MODELS[newProvider]?.[0];
+    const firstModel = newProvider === 'custom'
+      ? NVIDIA_MODELS[0]
+      : AVAILABLE_MODELS[newProvider]?.[0];
     if (firstModel) {
       setSelectedModel(firstModel.id);
     }
@@ -61,7 +66,10 @@ export function ModelSelector({ value, onChange, showPlayground = false }: Model
             <TabsTrigger value="openai">OpenAI</TabsTrigger>
             <TabsTrigger value="anthropic">Anthropic</TabsTrigger>
             <TabsTrigger value="ollama">Ollama</TabsTrigger>
-            <TabsTrigger value="custom">Custom</TabsTrigger>
+            <TabsTrigger value="custom">
+              <Cpu className="h-4 w-4 mr-1" />
+              NVIDIA
+            </TabsTrigger>
           </TabsList>
 
           {(['openai', 'anthropic', 'ollama', 'custom'] as ModelProvider[]).map((p) => (
@@ -74,7 +82,7 @@ export function ModelSelector({ value, onChange, showPlayground = false }: Model
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(AVAILABLE_MODELS[p] || []).map((model) => (
+                    {(p === 'custom' ? NVIDIA_MODELS : AVAILABLE_MODELS[p] || []).map((model) => (
                       <SelectItem key={model.id} value={model.id}>
                         <div className="flex items-center justify-between w-full">
                           <span>{model.name}</span>

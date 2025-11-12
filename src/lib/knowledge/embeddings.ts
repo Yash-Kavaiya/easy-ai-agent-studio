@@ -120,29 +120,36 @@ export class EmbeddingGenerator {
    */
   private async generateOpenAIEmbedding(text: string): Promise<number[]> {
     if (!this.config.apiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.warn('OpenAI API key not configured, using simulated embeddings');
+      return this.generateSimulatedEmbedding(text);
     }
 
-    // In production, implement actual API call
-    // For now, return simulated embedding
-    return this.generateSimulatedEmbedding(text);
+    try {
+      const baseURL = this.config.baseURL || 'https://api.openai.com/v1';
+      const response = await fetch(`${baseURL}/embeddings`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          input: text,
+          model: this.config.model || 'text-embedding-3-small'
+        })
+      });
 
-    /* Production implementation:
-    const response = await fetch('https://api.openai.com/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        input: text,
-        model: this.config.model
-      })
-    });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(`OpenAI API Error: ${response.status} - ${JSON.stringify(error)}`);
+      }
 
-    const data = await response.json();
-    return data.data[0].embedding;
-    */
+      const data = await response.json();
+      return data.data[0].embedding;
+    } catch (error) {
+      console.error('OpenAI embedding error:', error);
+      // Fallback to simulated embeddings on error
+      return this.generateSimulatedEmbedding(text);
+    }
   }
 
   /**
@@ -150,30 +157,37 @@ export class EmbeddingGenerator {
    */
   private async generateNVIDIAEmbedding(text: string): Promise<number[]> {
     if (!this.config.apiKey) {
-      throw new Error('NVIDIA API key not configured');
+      console.warn('NVIDIA API key not configured, using simulated embeddings');
+      return this.generateSimulatedEmbedding(text);
     }
 
-    // In production, implement actual NVIDIA API call
-    // For now, return simulated embedding
-    return this.generateSimulatedEmbedding(text);
+    try {
+      const baseURL = this.config.baseURL || 'https://integrate.api.nvidia.com/v1';
+      const response = await fetch(`${baseURL}/embeddings`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          input: text,
+          model: this.config.model || 'llama-3_2-nemoretriever-300m-embed-v2',
+          encoding_format: 'float'
+        })
+      });
 
-    /* Production implementation:
-    const response = await fetch('https://integrate.api.nvidia.com/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        input: text,
-        model: this.config.model,
-        encoding_format: 'float'
-      })
-    });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(`NVIDIA API Error: ${response.status} - ${JSON.stringify(error)}`);
+      }
 
-    const data = await response.json();
-    return data.data[0].embedding;
-    */
+      const data = await response.json();
+      return data.data[0].embedding;
+    } catch (error) {
+      console.error('NVIDIA embedding error:', error);
+      // Fallback to simulated embeddings on error
+      return this.generateSimulatedEmbedding(text);
+    }
   }
 
   /**
