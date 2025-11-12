@@ -1,9 +1,15 @@
-
+import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { WorkflowCanvas } from "@/components/WorkflowCanvas";
+import { SettingsDialog } from "@/components/studio/settings/SettingsDialog";
+import { ProjectManager } from "@/components/studio/project/ProjectManager";
+import { Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Studio = () => {
+  const [showSettings, setShowSettings] = useState(false);
+
   return (
     <div className="min-h-screen bg-nvidia-black">
       <SidebarProvider>
@@ -13,12 +19,27 @@ const Studio = () => {
             <SidebarTrigger className="mb-4" />
             <div className="max-w-6xl mx-auto">
               <div className="mb-8">
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  Easy AI <span className="text-nvidia-green">Studio</span>
-                </h1>
-                <p className="text-gray-300 text-lg">
-                  Build, test, and deploy AI agents with our intuitive visual editor
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-4xl font-bold text-white mb-4">
+                      Easy AI <span className="text-nvidia-green">Studio</span>
+                    </h1>
+                    <p className="text-gray-300 text-lg">
+                      Build, test, and deploy AI agents with our intuitive visual editor
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ProjectManager />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSettings(true)}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* Main Studio Content */}
@@ -79,6 +100,9 @@ const Studio = () => {
           </main>
         </div>
       </SidebarProvider>
+
+      {/* Settings Dialog */}
+      <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
     </div>
   );
 };
