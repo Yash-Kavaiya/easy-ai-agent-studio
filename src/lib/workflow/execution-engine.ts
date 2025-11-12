@@ -7,7 +7,7 @@ import { WorkflowNode, WorkflowEdge, NodeType, ExecutionContext } from '@/types/
 import { createAIClient } from '@/lib/api/client';
 import { ModelProvider } from '@/types/model.types';
 import { EmbeddingGenerator } from '@/lib/knowledge/embeddings';
-import { semanticSearch } from '@/lib/knowledge/search';
+import { SemanticSearch } from '@/lib/knowledge/search';
 import { useKnowledgeStore } from '@/store/knowledgeStore';
 import { useToolStore } from '@/store/toolStore';
 import { ToolExecutor } from '@/lib/tools/tool-executor';
@@ -465,10 +465,12 @@ export class WorkflowExecutionEngine {
     }
 
     // Perform semantic search
-    const results = await semanticSearch(
+    const searchInstance = new SemanticSearch(generator);
+    const results = await searchInstance.search(
       query,
+      allChunks,
       documents,
-      { topK, threshold, hybridWeight: 0.7 }
+      { topK, threshold }
     );
 
     return {

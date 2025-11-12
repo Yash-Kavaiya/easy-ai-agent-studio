@@ -159,6 +159,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           if (!workflow) return state;
 
           return {
+            ...state,
             workflows: {
               ...state.workflows,
               [id]: {
@@ -201,6 +202,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           if (!workflow) return state;
 
           return {
+            ...state,
             workflows: {
               ...state.workflows,
               [id]: {
@@ -241,6 +243,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
           if (!workflow) return state;
 
           return {
+            ...state,
             workflows: {
               ...state.workflows,
               [id]: {

@@ -28,7 +28,7 @@ export interface ModelConfig {
   updatedAt: Date;
 }
 
-export type ModelProvider = 'openai' | 'anthropic' | 'ollama' | 'cohere' | 'custom';
+export type ModelProvider = 'openai' | 'anthropic' | 'ollama' | 'cohere' | 'nvidia' | 'custom';
 
 export interface ModelInfo {
   id: string;
@@ -191,6 +191,7 @@ export const AVAILABLE_MODELS: Record<ModelProvider, ModelInfo[]> = {
     }
   ],
   cohere: [],
+  nvidia: [],
   custom: []
 };
 

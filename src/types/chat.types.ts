@@ -25,6 +25,7 @@ export interface MessageMetadata {
   model?: string;
   latency?: number;
   toolCalls?: ToolCall[];
+  error?: string;
 }
 
 export interface ToolCall {

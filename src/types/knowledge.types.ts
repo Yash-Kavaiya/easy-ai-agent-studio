@@ -14,7 +14,7 @@ export interface Document {
   tags: string[];
 }
 
-export type DocumentType = 'pdf' | 'txt' | 'md' | 'docx' | 'csv' | 'url' | 'html';
+export type DocumentType = 'pdf' | 'txt' | 'md' | 'docx' | 'csv' | 'url' | 'html' | 'json';
 
 export interface DocumentMetadata {
   author?: string;

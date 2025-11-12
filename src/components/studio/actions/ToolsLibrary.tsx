@@ -162,11 +162,11 @@ export function ToolsLibrary({ onToolSelect }: ToolsLibraryProps) {
             <TabsTrigger value="all" className="text-xs">
               All ({BUILTIN_TOOLS.length})
             </TabsTrigger>
-            <TabsTrigger value="web" className="text-xs">
-              Web ({categoryCount('web')})
+            <TabsTrigger value={ToolCategory.WEB} className="text-xs">
+              Web ({categoryCount(ToolCategory.WEB)})
             </TabsTrigger>
-            <TabsTrigger value="file" className="text-xs">
-              File ({categoryCount('file')})
+            <TabsTrigger value={ToolCategory.FILE} className="text-xs">
+              File ({categoryCount(ToolCategory.FILE)})
             </TabsTrigger>
           </TabsList>
         </Tabs>
