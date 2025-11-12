@@ -193,3 +193,156 @@ export const AVAILABLE_MODELS: Record<ModelProvider, ModelInfo[]> = {
   cohere: [],
   custom: []
 };
+
+// NVIDIA NIM Models (from NVIDIA API Catalog)
+export const NVIDIA_MODELS: ModelInfo[] = [
+  // Top Reasoning Models
+  {
+    id: 'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    name: 'Llama 3.3 Nemotron Super 49B v1.5',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: true, vision: false, multimodal: false }
+  },
+  {
+    id: 'nvidia/llama-3.1-nemotron-ultra-253b-v1',
+    name: 'Llama 3.1 Nemotron Ultra 253B',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: true, vision: false, multimodal: false }
+  },
+  {
+    id: 'deepseek-ai/deepseek-r1',
+    name: 'DeepSeek R1',
+    provider: 'custom',
+    contextWindow: 64000,
+    maxOutput: 8192,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'deepseek-ai/deepseek-v3.1',
+    name: 'DeepSeek V3.1',
+    provider: 'custom',
+    contextWindow: 64000,
+    maxOutput: 8192,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'qwen/qwq-32b',
+    name: 'QwQ 32B',
+    provider: 'custom',
+    contextWindow: 32768,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  // Chat Models with Function Calling
+  {
+    id: 'mistralai/mistral-nemotron',
+    name: 'Mistral Nemotron',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: true, vision: false, multimodal: false }
+  },
+  {
+    id: 'minimax/minimax-m2',
+    name: 'MiniMax M2',
+    provider: 'custom',
+    contextWindow: 200000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: true, vision: false, multimodal: false }
+  },
+  {
+    id: 'moonshot-ai/kimi-k2-instruct',
+    name: 'Kimi K2 Instruct',
+    provider: 'custom',
+    contextWindow: 200000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  // Edge/Efficient Models
+  {
+    id: 'nvidia/llama-3.1-nemotron-nano-8b-v1',
+    name: 'Llama 3.1 Nemotron Nano 8B',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'nvidia/llama-3.1-nemotron-nano-4b-v1.1',
+    name: 'Llama 3.1 Nemotron Nano 4B',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'microsoft/phi-4-mini-instruct',
+    name: 'Phi-4 Mini Instruct',
+    provider: 'custom',
+    contextWindow: 16000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  // General Purpose
+  {
+    id: 'meta/llama-3.3-70b-instruct',
+    name: 'Llama 3.3 70B Instruct',
+    provider: 'custom',
+    contextWindow: 128000,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'google/gemma-3-27b-it',
+    name: 'Gemma 3 27B IT',
+    provider: 'custom',
+    contextWindow: 8192,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'ibm/granite-3.3-8b-instruct',
+    name: 'Granite 3.3 8B Instruct',
+    provider: 'custom',
+    contextWindow: 8192,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  // Coding Models
+  {
+    id: 'qwen/qwen3-coder-480b-a35b-instruct',
+    name: 'Qwen3 Coder 480B',
+    provider: 'custom',
+    contextWindow: 32768,
+    maxOutput: 8192,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  },
+  {
+    id: 'qwen/qwen2.5-coder-32b-instruct',
+    name: 'Qwen2.5 Coder 32B',
+    provider: 'custom',
+    contextWindow: 32768,
+    maxOutput: 4096,
+    pricing: { input: 0, output: 0, currency: 'USD' },
+    capabilities: { streaming: true, jsonMode: false, functionCalling: false, vision: false, multimodal: false }
+  }
+];

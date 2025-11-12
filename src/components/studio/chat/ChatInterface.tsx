@@ -11,6 +11,9 @@ import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { useChatStore } from '@/store/chatStore';
 import { useAgentStore } from '@/store/agentStore';
+import { useProjectStore } from '@/store/projectStore';
+import { createAIClient } from '@/lib/api/client';
+import { ModelProvider } from '@/types/model.types';
 import { MessageSquare, Trash2, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,6 +37,7 @@ export function ChatInterface({ className }: ChatInterfaceProps) {
   } = useChatStore();
 
   const { activeAgentId, getAgent } = useAgentStore();
+  const { settings } = useProjectStore();
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
 
   // Initialize conversation
@@ -86,44 +90,109 @@ export function ChatInterface({ className }: ChatInterfaceProps) {
       }
     });
 
-    // Simulate streaming response
-    await simulateStreamingResponse(currentConversationId, assistantMessageId, text);
+    // Stream AI response
+    await streamAIResponse(currentConversationId, assistantMessageId, text);
 
     setStreaming(false);
   };
 
-  const simulateStreamingResponse = async (
+  /**
+   * Stream AI response using configured provider
+   */
+  const streamAIResponse = async (
     conversationId: string,
     messageId: string,
     userMessage: string
   ) => {
-    // This is a placeholder - replace with actual API streaming
-    const responses = [
-      "I'm here to help you build AI agents!",
-      "You can create workflows, manage knowledge bases, and configure models.",
-      "What would you like to know more about?",
-      `You asked: "${userMessage}". This is a simulated response. In production, this would connect to your configured AI model (${agent?.primaryModel || 'default model'}).`,
-      "The system supports multiple AI providers including OpenAI, Anthropic, and local models via Ollama.",
-      "You can configure these in the Settings panel."
-    ];
-
-    const response = responses[Math.floor(Math.random() * responses.length)];
-    const words = response.split(' ');
-    let currentText = '';
-
     const startTime = Date.now();
+    let currentText = '';
+    let tokenCount = 0;
 
-    for (const word of words) {
-      currentText += (currentText ? ' ' : '') + word;
+    try {
+      // Get model and provider configuration
+      const modelId = agent?.primaryModel || 'gpt-3.5-turbo';
+
+      // Determine provider from model ID
+      let provider: ModelProvider = 'openai';
+      if (modelId.startsWith('claude')) provider = 'anthropic';
+      else if (modelId.includes('nvidia') || modelId.includes('deepseek') || modelId.includes('qwen')) provider = 'nvidia';
+      else if (modelId.startsWith('llama') || modelId.startsWith('mistral')) provider = 'ollama';
+
+      // Get API key from settings
+      const providerConfig = settings.models.providers.find(p => p.provider === provider && p.enabled);
+
+      if (!providerConfig?.apiKey) {
+        // Fallback to simulated response if no API key configured
+        currentText = `⚠️ No API key configured for ${provider}. Please configure your API keys in Settings to use real AI models.\n\nFor now, here's a simulated response: I'm ready to help you build AI agents! Configure your API keys to unlock the full power of ${modelId}.`;
+        updateMessage(conversationId, messageId, {
+          content: currentText,
+          metadata: {
+            model: modelId,
+            tokens: 0,
+            latency: Date.now() - startTime
+          }
+        });
+        return;
+      }
+
+      // Create AI client
+      const client = createAIClient(provider, providerConfig.apiKey, providerConfig.baseURL);
+
+      // Get conversation history for context
+      const conversationMessages = getMessages(conversationId);
+      const systemPrompt = agent?.systemPrompt || 'You are a helpful AI assistant.';
+
+      // Build messages array
+      const messages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...conversationMessages
+          .filter(m => m.role !== 'system')
+          .slice(-10) // Last 10 messages for context
+          .map(m => ({
+            role: m.role as 'user' | 'assistant',
+            content: m.content
+          }))
+      ];
+
+      // Stream the response
+      const stream = client.streamChatCompletion({
+        model: modelId,
+        messages,
+        temperature: 0.7,
+        max_tokens: 2048
+      });
+
+      for await (const chunk of stream) {
+        currentText += chunk;
+        tokenCount++;
+
+        updateMessage(conversationId, messageId, {
+          content: currentText,
+          metadata: {
+            model: modelId,
+            tokens: tokenCount,
+            latency: Date.now() - startTime
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error('Streaming error:', error);
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      currentText = `❌ Error: ${errorMessage}\n\nPlease check your API key configuration and try again.`;
+
       updateMessage(conversationId, messageId, {
         content: currentText,
         metadata: {
-          model: agent?.primaryModel || 'gpt-3.5-turbo',
-          tokens: currentText.split(' ').length,
-          latency: Date.now() - startTime
+          model: agent?.primaryModel || 'unknown',
+          tokens: 0,
+          latency: Date.now() - startTime,
+          error: errorMessage
         }
       });
-      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      toast.error('Failed to stream response');
     }
   };
 
