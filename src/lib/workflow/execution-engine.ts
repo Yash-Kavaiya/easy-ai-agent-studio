@@ -9,6 +9,8 @@ import { ModelProvider } from '@/types/model.types';
 import { EmbeddingGenerator } from '@/lib/knowledge/embeddings';
 import { semanticSearch } from '@/lib/knowledge/search';
 import { useKnowledgeStore } from '@/store/knowledgeStore';
+import { useToolStore } from '@/store/toolStore';
+import { ToolExecutor } from '@/lib/tools/tool-executor';
 
 export enum ExecutionStatus {
   IDLE = 'idle',
@@ -297,14 +299,40 @@ export class WorkflowExecutionEngine {
    */
   private async executeTool(node: WorkflowNode, input: any): Promise<any> {
     const data = node.data as any;
+    const toolId = data.toolId;
 
-    // Tool execution logic would go here
-    // For now, return a placeholder
-    return {
-      tool: data.toolId,
-      result: `Executed tool: ${data.toolId}`,
-      input
+    if (!toolId) {
+      throw new Error('No tool selected for Tool node');
+    }
+
+    // Get tool from store
+    const toolStore = useToolStore.getState();
+    const tool = toolStore.getTool(toolId);
+
+    if (!tool) {
+      throw new Error(`Tool not found: ${toolId}`);
+    }
+
+    // Merge parameters with input
+    const parameters = {
+      ...data.parameters,
+      ...(typeof input === 'object' ? input : { input })
     };
+
+    try {
+      // Execute tool using ToolExecutor
+      const result = await ToolExecutor.execute(tool, parameters);
+
+      return {
+        tool: toolId,
+        toolName: tool.name,
+        result,
+        input,
+        executedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      throw new Error(`Tool execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
