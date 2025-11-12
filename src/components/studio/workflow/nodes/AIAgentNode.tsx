@@ -24,7 +24,7 @@ export const AIAgentNode = memo(({ data, selected }: NodeProps<AIAgentNodeData>)
               <Bot className="h-4 w-4 text-nvidia-green" />
             </div>
             <div>
-              <div className="font-medium text-sm">{data.label || 'AI Agent'}</div>
+              <div className="font-medium text-sm text-white">{data.label || 'AI Agent'}</div>
               {data.model && (
                 <div className="text-xs text-muted-foreground">{data.model}</div>
               )}

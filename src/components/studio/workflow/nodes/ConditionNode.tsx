@@ -23,7 +23,7 @@ export const ConditionNode = memo(({ data, selected }: NodeProps<ConditionNodeDa
             <GitBranch className="h-4 w-4 text-amber-500" />
           </div>
           <div className="flex-1">
-            <div className="font-medium text-sm">{data.label || 'Condition'}</div>
+            <div className="font-medium text-sm text-white">{data.label || 'Condition'}</div>
             {data.operator && (
               <div className="text-xs text-muted-foreground capitalize">
                 {data.operator}
