@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppSidebar } from "@/components/AppSidebar";
 import { WorkflowCanvas } from "@/components/WorkflowCanvas";
 import { SettingsDialog } from "@/components/studio/settings/SettingsDialog";
 import { ProjectManager } from "@/components/studio/project/ProjectManager";
@@ -18,11 +16,8 @@ const Studio = () => {
 
   return (
     <div className="min-h-screen bg-nvidia-black">
-      <SidebarProvider>
-        <div className="flex w-full">
-          <AppSidebar />
-          <main className="flex-1 p-6">
-            <SidebarTrigger className="mb-4" />
+      <div className="flex w-full">
+        <main className="flex-1 p-6">
             <div className="max-w-6xl mx-auto">
               <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -102,7 +97,6 @@ const Studio = () => {
             </div>
           </main>
         </div>
-      </SidebarProvider>
 
       {/* Settings Dialog */}
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />

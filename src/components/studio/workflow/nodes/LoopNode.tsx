@@ -23,7 +23,7 @@ export const LoopNode = memo(({ data, selected }: NodeProps<LoopNodeData>) => {
             <RotateCw className="h-4 w-4 text-purple-500" />
           </div>
           <div className="flex-1">
-            <div className="font-medium text-sm">{data.label || 'Loop'}</div>
+            <div className="font-medium text-sm text-white">{data.label || 'Loop'}</div>
             {data.iterableField && (
               <div className="text-xs text-muted-foreground">
                 Iterate: {data.iterableField}

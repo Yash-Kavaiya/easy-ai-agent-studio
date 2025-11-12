@@ -23,7 +23,7 @@ export const KnowledgeNode = memo(({ data, selected }: NodeProps<KnowledgeNodeDa
             <Database className="h-4 w-4 text-indigo-500" />
           </div>
           <div className="flex-1">
-            <div className="font-medium text-sm">{data.label || 'Knowledge Search'}</div>
+            <div className="font-medium text-sm text-white">{data.label || 'Knowledge Search'}</div>
             {data.query && (
               <div className="text-xs text-muted-foreground truncate">
                 Query: {data.query}

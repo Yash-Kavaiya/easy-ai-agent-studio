@@ -23,7 +23,7 @@ export const HumanInputNode = memo(({ data, selected }: NodeProps<HumanInputNode
             <User className="h-4 w-4 text-orange-500" />
           </div>
           <div className="flex-1">
-            <div className="font-medium text-sm">{data.label || 'Human Input'}</div>
+            <div className="font-medium text-sm text-white">{data.label || 'Human Input'}</div>
             {data.prompt && (
               <div className="text-xs text-muted-foreground truncate">
                 {data.prompt}
