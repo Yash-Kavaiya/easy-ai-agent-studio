@@ -130,6 +130,17 @@ const Footer = () => {
               <li><a href="#" className="text-gray-300 hover:text-nvidia-green transition-colors">HR & workforce leader</a></li>
               <li><a href="#" className="text-gray-300 hover:text-nvidia-green transition-colors">Customer service leader</a></li>
               <li><a href="#" className="text-gray-300 hover:text-nvidia-green transition-colors">Industrial manufacturing firm</a></li>
+              <li>
+                <a
+                  href="https://github.com/Yash-Kavaiya/NVDIA-Retail-AI-Teams"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-nvidia-green transition-colors"
+                  title="NVIDIA Retail AI Teams - Multi-agent system transforming retail operations with 99% accuracy in policy retrieval, 3x faster response times, and 70% reduction in analyst workload"
+                >
+                  NVIDIA Retail AI Teams
+                </a>
+              </li>
             </ul>
           </div>
 
