@@ -180,9 +180,11 @@ const Header = () => {
                 Agent Studio →
               </Button>
             </Link>
-            <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105">
-              Book a Demo
-            </Button>
+            <Link to="/book-demo">
+              <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105">
+                Book a Demo
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -210,9 +212,11 @@ const Header = () => {
                     Agent Studio →
                   </Button>
                 </Link>
-                <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg w-fit">
-                  Book a Demo
-                </Button>
+                <Link to="/book-demo">
+                  <Button className="bg-nvidia-gradient hover:bg-nvidia-gradient-dark text-white font-semibold px-6 py-2 rounded-lg w-fit">
+                    Book a Demo
+                  </Button>
+                </Link>
               </div>
             </nav>
           </div>
