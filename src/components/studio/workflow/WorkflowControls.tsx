@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Play, Square, Pause, SkipForward, Clock, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { Play, Square, Pause, SkipForward, Clock, CheckCircle2, XCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { WorkflowExecutionEngine, ExecutionStatus, ExecutionState } from '@/lib/workflow/execution-engine';
+import { WorkflowValidator, ValidationResult } from '@/lib/workflow/workflow-validator';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { toast } from 'sonner';
 
@@ -18,10 +19,11 @@ interface WorkflowControlsProps {
 }
 
 export function WorkflowControls({ className }: WorkflowControlsProps) {
-  const { getNodes, getEdges } = useWorkflowStore();
+  const { getNodes, getEdges, updateNodeStatus, resetAllNodeStatuses } = useWorkflowStore();
   const [engine, setEngine] = useState<WorkflowExecutionEngine | null>(null);
   const [executionState, setExecutionState] = useState<ExecutionState | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
   // Create engine when nodes/edges change
   useEffect(() => {
@@ -29,18 +31,57 @@ export function WorkflowControls({ className }: WorkflowControlsProps) {
     const edges = getEdges();
 
     if (nodes.length > 0) {
-      const newEngine = new WorkflowExecutionEngine(nodes, edges, (state) => {
-        setExecutionState(state);
-      });
+      const newEngine = new WorkflowExecutionEngine(
+        nodes,
+        edges,
+        (state) => {
+          setExecutionState(state);
+        },
+        (nodeId, status, error) => {
+          updateNodeStatus(nodeId, status, error);
+        }
+      );
       setEngine(newEngine);
     }
-  }, [getNodes, getEdges]);
+  }, [getNodes, getEdges, updateNodeStatus]);
+
+  const handleValidate = () => {
+    const nodes = getNodes();
+    const edges = getEdges();
+
+    const validator = new WorkflowValidator(nodes, edges);
+    const result = validator.validate();
+
+    setValidationResult(result);
+
+    if (result.valid) {
+      toast.success('Workflow is valid!');
+    } else {
+      toast.error(`Workflow has ${result.errors.length} error(s)`);
+    }
+
+    if (result.warnings.length > 0) {
+      toast.warning(`Workflow has ${result.warnings.length} warning(s)`);
+    }
+
+    return result;
+  };
 
   const handleRun = async () => {
     if (!engine) {
       toast.error('No workflow to execute');
       return;
     }
+
+    // Validate workflow before execution
+    const validation = handleValidate();
+    if (!validation.valid) {
+      toast.error('Cannot execute workflow with validation errors. Please fix the errors first.');
+      return;
+    }
+
+    // Reset all node statuses before starting
+    resetAllNodeStatuses();
 
     try {
       const input = inputValue || undefined;
@@ -147,6 +188,16 @@ export function WorkflowControls({ className }: WorkflowControlsProps) {
           </Button>
 
           <Button
+            onClick={handleValidate}
+            disabled={!engine}
+            variant="outline"
+            className="flex-1"
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Validate
+          </Button>
+
+          <Button
             onClick={handleStop}
             disabled={!engine || executionState?.status !== ExecutionStatus.RUNNING}
             variant="outline"
@@ -165,6 +216,52 @@ export function WorkflowControls({ className }: WorkflowControlsProps) {
             </Button>
           )}
         </div>
+
+        {/* Validation Results */}
+        {validationResult && (
+          <div className="space-y-2 pt-3 border-t border-nvidia-gray-medium">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Validation Results</span>
+              {validationResult.valid ? (
+                <Badge className="bg-green-500 text-white">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Valid
+                </Badge>
+              ) : (
+                <Badge className="bg-red-500 text-white">
+                  <XCircle className="h-3 w-3 mr-1" />
+                  Invalid
+                </Badge>
+              )}
+            </div>
+
+            {validationResult.errors.length > 0 && (
+              <ScrollArea className="max-h-32">
+                <div className="space-y-1">
+                  {validationResult.errors.map((error, idx) => (
+                    <div key={idx} className="p-2 bg-red-500/10 border border-red-500/30 rounded text-xs">
+                      <span className="text-red-500 font-medium">Error:</span>
+                      <span className="ml-2 text-white">{error.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+
+            {validationResult.warnings.length > 0 && (
+              <ScrollArea className="max-h-32">
+                <div className="space-y-1">
+                  {validationResult.warnings.map((warning, idx) => (
+                    <div key={idx} className="p-2 bg-amber-500/10 border border-amber-500/30 rounded text-xs">
+                      <span className="text-amber-500 font-medium">Warning:</span>
+                      <span className="ml-2 text-white">{warning.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+        )}
 
         {/* Execution Info */}
         {executionState && (

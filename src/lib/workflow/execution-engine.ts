@@ -3,7 +3,7 @@
  * Executes workflows node by node with state management
  */
 
-import { WorkflowNode, WorkflowEdge, NodeType, ExecutionContext } from '@/types/workflow.types';
+import { WorkflowNode, WorkflowEdge, NodeType, ExecutionContext, NodeExecutionStatus } from '@/types/workflow.types';
 import { createAIClient } from '@/lib/api/client';
 import { ModelProvider } from '@/types/model.types';
 import { EmbeddingGenerator } from '@/lib/knowledge/embeddings';
@@ -45,16 +45,19 @@ export class WorkflowExecutionEngine {
   private edges: WorkflowEdge[];
   private state: ExecutionState;
   private onStateChange?: (state: ExecutionState) => void;
+  private onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void;
   private abortController: AbortController | null = null;
 
   constructor(
     nodes: WorkflowNode[],
     edges: WorkflowEdge[],
-    onStateChange?: (state: ExecutionState) => void
+    onStateChange?: (state: ExecutionState) => void,
+    onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void
   ) {
     this.nodes = nodes;
     this.edges = edges;
     this.onStateChange = onStateChange;
+    this.onNodeStatusChange = onNodeStatusChange;
     this.state = {
       status: ExecutionStatus.IDLE,
       currentNodeId: null,
@@ -155,6 +158,12 @@ export class WorkflowExecutionEngine {
   private async executeNode(node: WorkflowNode, input: any): Promise<any> {
     const startTime = Date.now();
     this.state.currentNodeId = node.id;
+
+    // Update node status to running
+    if (this.onNodeStatusChange) {
+      this.onNodeStatusChange(node.id, NodeExecutionStatus.RUNNING);
+    }
+
     this.notifyStateChange();
 
     try {
@@ -218,6 +227,11 @@ export class WorkflowExecutionEngine {
       // Store output in variables
       this.state.variables[node.id] = output;
 
+      // Update node status to completed
+      if (this.onNodeStatusChange) {
+        this.onNodeStatusChange(node.id, NodeExecutionStatus.COMPLETED);
+      }
+
       // Execute next nodes
       if (node.type !== NodeType.END) {
         const nextNodes = this.getNextNodes(node, output);
@@ -240,6 +254,13 @@ export class WorkflowExecutionEngine {
 
       return output;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // Update node status to error
+      if (this.onNodeStatusChange) {
+        this.onNodeStatusChange(node.id, NodeExecutionStatus.ERROR, errorMessage);
+      }
+
       this.state.history.push({
         nodeId: node.id,
         nodeType: node.type,
@@ -247,7 +268,7 @@ export class WorkflowExecutionEngine {
         output: null,
         timestamp: Date.now(),
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMessage
       });
       throw error;
     }
