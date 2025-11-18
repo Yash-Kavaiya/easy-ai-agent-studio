@@ -485,11 +485,25 @@ export class WorkflowExecutionEngine {
       };
     }
 
+    // Create generator and chunks for search - using simulated embeddings for now
+    const { EmbeddingGenerator } = await import('@/lib/knowledge/embeddings');
+    const { TextChunker } = await import('@/lib/knowledge/chunking');
+    
+    const generator = new EmbeddingGenerator({
+      provider: 'simulated',
+      model: 'simulated',
+      dimensions: 1536
+    });
+    
+    const allChunks = documents.flatMap(doc => 
+      TextChunker.chunkText(doc.content, doc.id, { chunkSize: 512, chunkOverlap: 50 })
+    );
+
     // Perform semantic search
-    const searchInstance = new SemanticSearch(generator);
+    const searchInstance = new SemanticSearch(generator as any);
     const results = await searchInstance.search(
       query,
-      allChunks,
+      allChunks as any,
       documents,
       { topK, threshold }
     );
@@ -497,9 +511,9 @@ export class WorkflowExecutionEngine {
     return {
       query,
       results: results.map(r => ({
-        content: r.chunk.text,
+        content: (r.chunk as any).content || (r.chunk as any).text,
         score: r.score,
-        documentId: r.chunk.documentId
+        documentId: (r.chunk as any).documentId
       }))
     };
   }

@@ -113,7 +113,14 @@ const Studio = () => {
                 {/* Templates Tab */}
                 <TabsContent value="templates">
                   <div className="max-w-4xl mx-auto">
-                    <TemplatesLibrary />
+                    <div className="text-center py-12">
+                      <h2 className="text-2xl font-semibold text-white mb-4">Workflow Templates</h2>
+                      <p className="text-gray-400 mb-6">Browse and use pre-built workflow templates</p>
+                      <Button onClick={() => setShowTemplates(true)} className="gap-2">
+                        <Library className="h-4 w-4" />
+                        Open Templates Library
+                      </Button>
+                    </div>
                   </div>
                 </TabsContent>
 
