@@ -9,6 +9,7 @@ import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
 import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
 import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
 import { NodeSettingsPanel } from "@/components/studio/workflow/NodeSettingsPanel";
+import { TemplateLibrary } from "@/components/studio/workflow/TemplateLibrary";
 import { useWorkflowStore } from "@/store/workflowStore";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,8 +53,9 @@ const Studio = () => {
 
               {/* Main Studio Content */}
               <Tabs defaultValue="workflow" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-6">
+                <TabsList className="grid w-full grid-cols-6 mb-6">
                   <TabsTrigger value="workflow">Workflow</TabsTrigger>
+                  <TabsTrigger value="templates">Templates</TabsTrigger>
                   <TabsTrigger value="chat">Chat</TabsTrigger>
                   <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
                   <TabsTrigger value="model">Model Config</TabsTrigger>
@@ -72,6 +74,13 @@ const Studio = () => {
                     <div style={{ height: '600px' }}>
                       <NodeLibrary />
                     </div>
+                  </div>
+                </TabsContent>
+
+                {/* Templates Tab */}
+                <TabsContent value="templates">
+                  <div className="max-w-4xl mx-auto">
+                    <TemplateLibrary />
                   </div>
                 </TabsContent>
 
