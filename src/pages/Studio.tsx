@@ -9,7 +9,7 @@ import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
 import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
 import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
 import { NodeSettingsPanel } from "@/components/studio/workflow/NodeSettingsPanel";
-import { TemplateLibrary } from "@/components/studio/workflow/TemplateLibrary";
+import { TemplatesLibrary } from "@/components/studio/workflow/TemplatesLibrary";
 import { useWorkflowStore } from "@/store/workflowStore";
 import { Settings, Library, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -113,7 +113,7 @@ const Studio = () => {
                 {/* Templates Tab */}
                 <TabsContent value="templates">
                   <div className="max-w-4xl mx-auto">
-                    <TemplateLibrary />
+                    <TemplatesLibrary />
                   </div>
                 </TabsContent>
 
