@@ -11,15 +11,22 @@ import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
 import { NodeSettingsPanel } from "@/components/studio/workflow/NodeSettingsPanel";
 import { TemplateLibrary } from "@/components/studio/workflow/TemplateLibrary";
 import { useWorkflowStore } from "@/store/workflowStore";
-import { Settings } from "lucide-react";
+import { Settings, Library, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Studio = () => {
   const [showSettings, setShowSettings] = useState(false);
-  const { selectedNodeId, setSelectedNode } = useWorkflowStore();
+  const [showTemplates, setShowTemplates] = useState(false);
+  const { selectedNodeId, setSelectedNode, clearWorkflow } = useWorkflowStore();
 
   const handleCloseNodeSettings = () => {
     setSelectedNode(null);
+  };
+
+  const handleClearWorkflow = () => {
+    if (confirm('Are you sure you want to clear the current workflow? This action cannot be undone.')) {
+      clearWorkflow();
+    }
   };
 
   return (
@@ -64,6 +71,32 @@ const Studio = () => {
 
                 {/* Workflow Tab */}
                 <TabsContent value="workflow" className="space-y-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-white">Workflow Builder</h2>
+                      <p className="text-sm text-gray-400">Design your AI agent workflow visually</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleClearWorkflow}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Clear Workflow
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowTemplates(true)}
+                        className="gap-2"
+                      >
+                        <Library className="h-4 w-4" />
+                        Templates Library
+                      </Button>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Workflow Canvas */}
                     <div className="lg:col-span-3 bg-nvidia-gray-dark rounded-lg border border-nvidia-gray-medium overflow-hidden" style={{ height: '600px' }}>
@@ -116,6 +149,9 @@ const Studio = () => {
 
       {/* Settings Dialog */}
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
+
+      {/* Templates Library */}
+      {showTemplates && <TemplatesLibrary onClose={() => setShowTemplates(false)} />}
 
       {/* Node Settings Panel */}
       {selectedNodeId && <NodeSettingsPanel onClose={handleCloseNodeSettings} />}
