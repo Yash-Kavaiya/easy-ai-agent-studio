@@ -9,6 +9,9 @@ import { NodeLibrary } from "@/components/studio/workflow/NodeLibrary";
 import { ToolsLibrary } from "@/components/studio/actions/ToolsLibrary";
 import { KnowledgeBase } from "@/components/studio/knowledge/KnowledgeBase";
 import { NodeSettingsPanel } from "@/components/studio/workflow/NodeSettingsPanel";
+import { NodeConfigDialog } from "@/components/studio/workflow/NodeConfigDialog";
+import { TemplateLibrary } from "@/components/studio/workflow/TemplateLibrary";
+import { WorkflowControls } from "@/components/studio/workflow/WorkflowControls";
 import { TemplatesLibrary } from "@/components/studio/workflow/TemplatesLibrary";
 import { useWorkflowStore } from "@/store/workflowStore";
 import { Settings, Library, Trash2 } from "lucide-react";
@@ -16,6 +19,9 @@ import { Button } from "@/components/ui/button";
 
 const Studio = () => {
   const [showSettings, setShowSettings] = useState(false);
+  const [configDialogNodeId, setConfigDialogNodeId] = useState<string | null>(null);
+  const [showConfigDialog, setShowConfigDialog] = useState(false);
+  const { selectedNodeId, setSelectedNode } = useWorkflowStore();
   const [showTemplates, setShowTemplates] = useState(false);
   const { selectedNodeId, setSelectedNode, clearWorkflow } = useWorkflowStore();
 
@@ -23,6 +29,9 @@ const Studio = () => {
     setSelectedNode(null);
   };
 
+  const handleOpenConfigDialog = (nodeId: string) => {
+    setConfigDialogNodeId(nodeId);
+    setShowConfigDialog(true);
   const handleClearWorkflow = () => {
     if (confirm('Are you sure you want to clear the current workflow? This action cannot be undone.')) {
       clearWorkflow();
@@ -100,13 +109,18 @@ const Studio = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Workflow Canvas */}
                     <div className="lg:col-span-3 bg-nvidia-gray-dark rounded-lg border border-nvidia-gray-medium overflow-hidden" style={{ height: '600px' }}>
-                      <WorkflowCanvas />
+                      <WorkflowCanvas onNodeDoubleClick={handleOpenConfigDialog} />
                     </div>
 
-                    {/* Node Library */}
-                    <div style={{ height: '600px' }}>
+                    {/* Node Library and Controls */}
+                    <div className="space-y-4" style={{ height: '600px' }}>
                       <NodeLibrary />
                     </div>
+                  </div>
+
+                  {/* Workflow Execution Controls */}
+                  <div className="max-w-4xl mx-auto">
+                    <WorkflowControls />
                   </div>
                 </TabsContent>
 
@@ -157,6 +171,12 @@ const Studio = () => {
       {/* Settings Dialog */}
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
 
+      {/* Node Configuration Dialog */}
+      <NodeConfigDialog
+        nodeId={configDialogNodeId}
+        open={showConfigDialog}
+        onOpenChange={setShowConfigDialog}
+      />
       {/* Templates Library */}
       {showTemplates && <TemplatesLibrary onClose={() => setShowTemplates(false)} />}
 
