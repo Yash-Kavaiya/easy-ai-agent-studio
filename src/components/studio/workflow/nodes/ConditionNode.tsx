@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { GitBranch } from 'lucide-react';
 import { ConditionNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeStatusIndicator, getNodeStatusBorderClass } from './NodeStatusIndicator';
 
 export const ConditionNode = memo(({ id, data, selected }: NodeProps<ConditionNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -23,8 +24,8 @@ export const ConditionNode = memo(({ id, data, selected }: NodeProps<ConditionNo
     <Card
       onClick={handleClick}
       className={`min-w-[180px] cursor-pointer ${
-        selected ? 'ring-2 ring-amber-500' : ''
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-amber-500 transition-colors`}
+        getNodeStatusBorderClass(data.executionStatus, selected) || (selected ? 'ring-2 ring-amber-500' : '')
+      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-amber-500 transition-all`}
     >
       <CardContent className="p-3">
         <div className="flex items-start gap-2 mb-2">
@@ -39,6 +40,7 @@ export const ConditionNode = memo(({ id, data, selected }: NodeProps<ConditionNo
               </div>
             )}
           </div>
+          <NodeStatusIndicator status={data.executionStatus} />
         </div>
 
         {data.expression && (

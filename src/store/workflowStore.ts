@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorkflowNode, WorkflowEdge, WorkflowData } from '@/types/workflow.types';
+import { WorkflowNode, WorkflowEdge, WorkflowData, NodeExecutionStatus } from '@/types/workflow.types';
 import { addEdge, applyNodeChanges, applyEdgeChanges, Connection, EdgeChange, NodeChange } from 'reactflow';
 
 interface WorkflowStore {
@@ -23,6 +23,8 @@ interface WorkflowStore {
   setNodes: (nodes: WorkflowNode[], workflowId?: string) => void;
   addNode: (node: WorkflowNode, workflowId?: string) => void;
   updateNode: (nodeId: string, updates: Partial<WorkflowNode>, workflowId?: string) => void;
+  updateNodeStatus: (nodeId: string, status: NodeExecutionStatus, error?: string, workflowId?: string) => void;
+  resetAllNodeStatuses: (workflowId?: string) => void;
   deleteNode: (nodeId: string, workflowId?: string) => void;
   onNodesChange: (changes: NodeChange[], workflowId?: string) => void;
 
@@ -151,6 +153,64 @@ export const useWorkflowStore = create<WorkflowStore>()(
                 edges: workflow.edges.filter(
                   (edge) => edge.source !== nodeId && edge.target !== nodeId
                 )
+              }
+            }
+          };
+        });
+      },
+
+      updateNodeStatus: (nodeId, status, error, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const workflow = state.workflows[id];
+          if (!workflow) return state;
+
+          return {
+            workflows: {
+              ...state.workflows,
+              [id]: {
+                ...workflow,
+                nodes: workflow.nodes.map((node) =>
+                  node.id === nodeId
+                    ? {
+                        ...node,
+                        data: {
+                          ...node.data,
+                          executionStatus: status,
+                          executionError: error
+                        }
+                      }
+                    : node
+                )
+              }
+            }
+          };
+        });
+      },
+
+      resetAllNodeStatuses: (workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const workflow = state.workflows[id];
+          if (!workflow) return state;
+
+          return {
+            workflows: {
+              ...state.workflows,
+              [id]: {
+                ...workflow,
+                nodes: workflow.nodes.map((node) => ({
+                  ...node,
+                  data: {
+                    ...node.data,
+                    executionStatus: NodeExecutionStatus.IDLE,
+                    executionError: undefined
+                  }
+                }))
               }
             }
           };

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Bot, Settings } from 'lucide-react';
 import { AIAgentNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeStatusIndicator, getNodeStatusBorderClass } from './NodeStatusIndicator';
 
 export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -23,8 +24,8 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
     <Card
       onClick={handleClick}
       className={`min-w-[200px] cursor-pointer ${
-        selected ? 'ring-2 ring-nvidia-green' : ''
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-colors`}
+        getNodeStatusBorderClass(data.executionStatus, selected)
+      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-all`}
     >
       <CardContent className="p-3">
         <div className="flex items-start justify-between mb-2">
@@ -39,12 +40,21 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
               )}
             </div>
           </div>
-          <Settings className="h-3 w-3 text-muted-foreground" />
+          <div className="flex items-center gap-1">
+            <NodeStatusIndicator status={data.executionStatus} />
+            <Settings className="h-3 w-3 text-muted-foreground" />
+          </div>
         </div>
 
         {data.description && (
           <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
             {data.description}
+          </p>
+        )}
+
+        {data.executionError && (
+          <p className="text-xs text-red-400 mb-2 line-clamp-2">
+            Error: {data.executionError}
           </p>
         )}
 
