@@ -10,6 +10,7 @@ import { EmbeddingGenerator } from '@/lib/knowledge/embeddings';
 import { SemanticSearch } from '@/lib/knowledge/search';
 import { useKnowledgeStore } from '@/store/knowledgeStore';
 import { useToolStore } from '@/store/toolStore';
+import { useWorkflowStore } from '@/store/workflowStore';
 import { ToolExecutor } from '@/lib/tools/tool-executor';
 
 export enum ExecutionStatus {
@@ -47,16 +48,19 @@ export class WorkflowExecutionEngine {
   private onStateChange?: (state: ExecutionState) => void;
   private onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void;
   private abortController: AbortController | null = null;
+  private workflowId?: string;
 
   constructor(
     nodes: WorkflowNode[],
     edges: WorkflowEdge[],
     onStateChange?: (state: ExecutionState) => void,
+    workflowId?: string
     onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void
   ) {
     this.nodes = nodes;
     this.edges = edges;
     this.onStateChange = onStateChange;
+    this.workflowId = workflowId;
     this.onNodeStatusChange = onNodeStatusChange;
     this.state = {
       status: ExecutionStatus.IDLE,
@@ -76,6 +80,13 @@ export class WorkflowExecutionEngine {
       throw new Error('No start node found in workflow');
     }
 
+    // Reset execution state in store
+    if (this.workflowId) {
+      const store = useWorkflowStore.getState();
+      store.resetExecutionState(this.workflowId);
+      store.setExecutionRunning(true, this.workflowId);
+    }
+
     this.abortController = new AbortController();
     this.state = {
       status: ExecutionStatus.RUNNING,
@@ -93,6 +104,14 @@ export class WorkflowExecutionEngine {
       this.state.status = ExecutionStatus.COMPLETED;
       this.state.currentNodeId = null;
       this.state.endTime = Date.now();
+
+      // Mark execution as complete in store
+      if (this.workflowId) {
+        const store = useWorkflowStore.getState();
+        store.setExecutionRunning(false, this.workflowId);
+        store.setCurrentExecutingNode(null, this.workflowId);
+      }
+
       this.notifyStateChange();
 
       return result;
@@ -100,6 +119,14 @@ export class WorkflowExecutionEngine {
       this.state.status = ExecutionStatus.ERROR;
       this.state.error = error instanceof Error ? error.message : 'Unknown error';
       this.state.endTime = Date.now();
+
+      // Mark execution as stopped in store
+      if (this.workflowId) {
+        const store = useWorkflowStore.getState();
+        store.setExecutionRunning(false, this.workflowId);
+        store.setCurrentExecutingNode(null, this.workflowId);
+      }
+
       this.notifyStateChange();
       throw error;
     }
@@ -114,6 +141,14 @@ export class WorkflowExecutionEngine {
     }
     this.state.status = ExecutionStatus.IDLE;
     this.state.currentNodeId = null;
+
+    // Update store
+    if (this.workflowId) {
+      const store = useWorkflowStore.getState();
+      store.setExecutionRunning(false, this.workflowId);
+      store.setCurrentExecutingNode(null, this.workflowId);
+    }
+
     this.notifyStateChange();
   }
 
@@ -122,6 +157,13 @@ export class WorkflowExecutionEngine {
    */
   pause(): void {
     this.state.status = ExecutionStatus.PAUSED;
+
+    // Update store
+    if (this.workflowId) {
+      const store = useWorkflowStore.getState();
+      store.setExecutionPaused(true, this.workflowId);
+    }
+
     this.notifyStateChange();
   }
 
@@ -135,6 +177,14 @@ export class WorkflowExecutionEngine {
 
     this.state.status = ExecutionStatus.RUNNING;
     this.state.variables = { ...this.state.variables, ...input };
+
+    // Update store
+    if (this.workflowId) {
+      const store = useWorkflowStore.getState();
+      store.setExecutionPaused(false, this.workflowId);
+      store.setExecutionRunning(true, this.workflowId);
+    }
+
     this.notifyStateChange();
 
     if (this.state.currentNodeId) {
@@ -159,6 +209,12 @@ export class WorkflowExecutionEngine {
     const startTime = Date.now();
     this.state.currentNodeId = node.id;
 
+    // Update node status to RUNNING in store
+    if (this.workflowId) {
+      const store = useWorkflowStore.getState();
+      store.setCurrentExecutingNode(node.id, this.workflowId);
+      store.addToExecutionPath(node.id, this.workflowId);
+      store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.RUNNING, undefined, undefined, this.workflowId);
     // Update node status to running
     if (this.onNodeStatusChange) {
       this.onNodeStatusChange(node.id, NodeExecutionStatus.RUNNING);
@@ -227,6 +283,10 @@ export class WorkflowExecutionEngine {
       // Store output in variables
       this.state.variables[node.id] = output;
 
+      // Update node status to COMPLETED in store
+      if (this.workflowId) {
+        const store = useWorkflowStore.getState();
+        store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.COMPLETED, undefined, output, this.workflowId);
       // Update node status to completed
       if (this.onNodeStatusChange) {
         this.onNodeStatusChange(node.id, NodeExecutionStatus.COMPLETED);
@@ -270,6 +330,13 @@ export class WorkflowExecutionEngine {
         duration: Date.now() - startTime,
         error: errorMessage
       });
+
+      // Update node status to ERROR in store
+      if (this.workflowId) {
+        const store = useWorkflowStore.getState();
+        store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.ERROR, errorMessage, undefined, this.workflowId);
+      }
+
       throw error;
     }
   }

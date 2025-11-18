@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Code } from 'lucide-react';
 import { TransformNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const TransformNode = memo(({ id, data, selected }: NodeProps<TransformNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -20,12 +22,17 @@ export const TransformNode = memo(({ id, data, selected }: NodeProps<TransformNo
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[200px] cursor-pointer ${
-        selected ? 'ring-2 ring-node-transform' : ''
-      } bg-card border-node-transform hover:border-node-transform/80 transition-colors`}
-    >
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[200px] cursor-pointer bg-card border-node-transform hover:border-node-transform/80 transition-colors',
+          selected ? 'ring-2 ring-node-transform' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
       <CardContent className="p-3">
         <div className="flex items-start gap-2 mb-2">
           <div className="p-1.5 bg-node-transform/20 rounded">
@@ -63,6 +70,7 @@ export const TransformNode = memo(({ id, data, selected }: NodeProps<TransformNo
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

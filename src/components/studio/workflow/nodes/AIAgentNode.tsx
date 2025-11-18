@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Bot, Settings } from 'lucide-react';
 import { AIAgentNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 import { NodeStatusIndicator, getNodeStatusBorderClass } from './NodeStatusIndicator';
 
 export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeData>) => {
@@ -21,6 +23,18 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
   };
 
   return (
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[200px] cursor-pointer bg-nvidia-gray-dark hover:border-nvidia-green transition-colors',
+          selected ? 'ring-2 ring-nvidia-green' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
+        <CardContent className="p-3">
     <Card
       onClick={handleClick}
       className={`min-w-[200px] cursor-pointer ${
@@ -81,6 +95,7 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

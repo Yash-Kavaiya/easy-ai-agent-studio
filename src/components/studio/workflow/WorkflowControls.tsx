@@ -19,6 +19,7 @@ interface WorkflowControlsProps {
 }
 
 export function WorkflowControls({ className }: WorkflowControlsProps) {
+  const { getNodes, getEdges, activeWorkflowId } = useWorkflowStore();
   const { getNodes, getEdges, updateNodeStatus, resetAllNodeStatuses } = useWorkflowStore();
   const [engine, setEngine] = useState<WorkflowExecutionEngine | null>(null);
   const [executionState, setExecutionState] = useState<ExecutionState | null>(null);
@@ -37,6 +38,11 @@ export function WorkflowControls({ className }: WorkflowControlsProps) {
         (state) => {
           setExecutionState(state);
         },
+        activeWorkflowId || undefined
+      );
+      setEngine(newEngine);
+    }
+  }, [getNodes, getEdges, activeWorkflowId]);
         (nodeId, status, error) => {
           updateNodeStatus(nodeId, status, error);
         }

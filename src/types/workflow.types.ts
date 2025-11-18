@@ -17,6 +17,16 @@ export enum NodeType {
   END = 'end'
 }
 
+export enum NodeExecutionStatus {
+  IDLE = 'idle',
+  PENDING = 'pending',
+  RUNNING = 'running',
+  COMPLETED = 'completed',
+  ERROR = 'error',
+  PAUSED = 'paused',
+  SKIPPED = 'skipped'
+}
+
 export interface WorkflowNode extends Node {
   type: NodeType;
   data: NodeData;
@@ -56,6 +66,7 @@ export interface BaseNodeData {
   description?: string;
   executionStatus?: NodeExecutionStatus;
   executionError?: string;
+  executionOutput?: any;
 }
 
 export interface AIAgentNodeData extends BaseNodeData {
@@ -111,4 +122,22 @@ export interface ExecutionContext {
   variables: Record<string, any>;
   currentNodeId: string;
   history: string[];
+}
+
+// Execution State Tracking
+export interface NodeExecutionState {
+  nodeId: string;
+  status: NodeExecutionStatus;
+  startTime?: number;
+  endTime?: number;
+  error?: string;
+  output?: any;
+}
+
+export interface WorkflowExecutionState {
+  isRunning: boolean;
+  isPaused: boolean;
+  currentNodeId: string | null;
+  nodeStates: Record<string, NodeExecutionState>;
+  executionPath: string[];
 }
