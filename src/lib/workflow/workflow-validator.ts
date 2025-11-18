@@ -194,21 +194,21 @@ export class WorkflowValidator {
     for (const node of this.nodes) {
       switch (node.type) {
         case NodeType.AI_AGENT:
-          if (!node.data.model) {
+          if (!(node.data as any).model) {
             errors.push({
               type: 'error',
               nodeId: node.id,
               message: `AI Agent "${node.data.label}" must have a model selected`
             });
           }
-          if (node.data.temperature !== undefined && (node.data.temperature < 0 || node.data.temperature > 2)) {
+          if ((node.data as any).temperature !== undefined && ((node.data as any).temperature < 0 || (node.data as any).temperature > 2)) {
             errors.push({
               type: 'error',
               nodeId: node.id,
               message: `AI Agent "${node.data.label}" temperature must be between 0 and 2`
             });
           }
-          if (node.data.maxTokens !== undefined && node.data.maxTokens < 1) {
+          if ((node.data as any).maxTokens !== undefined && (node.data as any).maxTokens < 1) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -218,7 +218,7 @@ export class WorkflowValidator {
           break;
 
         case NodeType.TOOL:
-          if (!node.data.toolId) {
+          if (!(node.data as any).toolId) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -228,7 +228,7 @@ export class WorkflowValidator {
           break;
 
         case NodeType.CONDITION:
-          if (!node.data.expression || !node.data.operator) {
+          if (!(node.data as any).expression || !(node.data as any).operator) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -238,14 +238,14 @@ export class WorkflowValidator {
           break;
 
         case NodeType.LOOP:
-          if (!node.data.iterableField) {
+          if (!(node.data as any).iterableField) {
             errors.push({
               type: 'error',
               nodeId: node.id,
               message: `Loop node "${node.data.label}" must have an iterable field`
             });
           }
-          if (node.data.maxIterations !== undefined && node.data.maxIterations < 1) {
+          if ((node.data as any).maxIterations !== undefined && (node.data as any).maxIterations < 1) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -255,7 +255,7 @@ export class WorkflowValidator {
           break;
 
         case NodeType.TRANSFORM:
-          if (!node.data.code && !node.data.transformScript) {
+          if (!(node.data as any).code && !(node.data as any).transformScript) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -265,7 +265,7 @@ export class WorkflowValidator {
           break;
 
         case NodeType.KNOWLEDGE:
-          if (!node.data.knowledgeBaseId) {
+          if (!(node.data as any).knowledgeBaseId) {
             errors.push({
               type: 'error',
               nodeId: node.id,
@@ -275,7 +275,7 @@ export class WorkflowValidator {
           break;
 
         case NodeType.HUMAN_INPUT:
-          if (!node.data.prompt) {
+          if (!(node.data as any).prompt) {
             errors.push({
               type: 'error',
               nodeId: node.id,
