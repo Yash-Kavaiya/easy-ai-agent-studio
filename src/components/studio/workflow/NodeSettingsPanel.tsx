@@ -25,7 +25,7 @@ export const NodeSettingsPanel: React.FC<NodeSettingsPanelProps> = ({ onClose })
   const nodes = getNodes();
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
-  const [localData, setLocalData] = useState(selectedNode?.data || {});
+  const [localData, setLocalData] = useState<any>(selectedNode?.data || {});
 
   useEffect(() => {
     if (selectedNode) {

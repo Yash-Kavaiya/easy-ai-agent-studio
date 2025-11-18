@@ -221,7 +221,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
         const id = workflowId || get().activeWorkflowId;
         if (!id) return;
 
-        set((state) => {
+        set((state: any) => {
           const workflow = state.workflows[id];
           if (!workflow) return state;
 
@@ -264,7 +264,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
         const id = workflowId || get().activeWorkflowId;
         if (!id) return;
 
-        set((state) => {
+        set((state: any) => {
           const workflow = state.workflows[id];
           if (!workflow) return state;
 
@@ -305,7 +305,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
         const id = workflowId || get().activeWorkflowId;
         if (!id) return;
 
-        set((state) => {
+        set((state: any) => {
           const workflow = state.workflows[id];
           if (!workflow) return state;
 

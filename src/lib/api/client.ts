@@ -119,7 +119,7 @@ export class AIClient {
     }
 
     // OpenAI and NVIDIA use the same format
-    const response = await this.client.createChatCompletion(request);
+    const response = await this.client.createChatCompletion(request as any);
     return response;
   }
 
@@ -147,7 +147,7 @@ export class AIClient {
 
     // OpenAI and NVIDIA use the same format
     if ('streamChatCompletion' in this.client) {
-      yield* this.client.streamChatCompletion(request);
+      yield* this.client.streamChatCompletion(request as any);
     }
   }
 
