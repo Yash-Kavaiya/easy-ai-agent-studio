@@ -74,7 +74,8 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
     addNode,
     addEdge: addEdgeToStore,
     createWorkflow,
-    setActiveWorkflow
+    setActiveWorkflow,
+    getExecutionState
   } = useWorkflowStore();
 
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
@@ -95,7 +96,47 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
   }, [workflowId]);
 
   const nodes = currentWorkflowId ? getNodes(currentWorkflowId) : [];
-  const edges = currentWorkflowId ? getEdges(currentWorkflowId) : [];
+  const rawEdges = currentWorkflowId ? getEdges(currentWorkflowId) : [];
+  const executionState = currentWorkflowId ? getExecutionState(currentWorkflowId) : null;
+
+  // Animate edges during execution based on execution path
+  const edges = rawEdges.map(edge => {
+    let isAnimated = false;
+    let strokeColor = 'hsl(var(--primary))';
+    let strokeWidth = 2;
+
+    if (executionState && executionState.isRunning) {
+      const { executionPath, currentNodeId } = executionState;
+
+      // Animate edges that are part of the execution path
+      const sourceIndex = executionPath.indexOf(edge.source);
+      const targetIndex = executionPath.indexOf(edge.target);
+
+      // If both source and target are in the path and source comes before target
+      if (sourceIndex !== -1 && targetIndex !== -1 && sourceIndex < targetIndex) {
+        isAnimated = true;
+        strokeColor = 'hsl(var(--nvidia-green))';
+        strokeWidth = 3;
+      }
+
+      // Special highlight for edges from the currently executing node
+      if (edge.source === currentNodeId) {
+        isAnimated = true;
+        strokeColor = 'hsl(var(--nvidia-green))';
+        strokeWidth = 4;
+      }
+    }
+
+    return {
+      ...edge,
+      animated: isAnimated,
+      style: {
+        ...edge.style,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth,
+      },
+    };
+  });
 
   const onConnect = useCallback(
     (params: Connection) => {

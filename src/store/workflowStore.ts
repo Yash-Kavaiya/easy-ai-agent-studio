@@ -4,13 +4,14 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorkflowNode, WorkflowEdge, WorkflowData } from '@/types/workflow.types';
+import { WorkflowNode, WorkflowEdge, WorkflowData, WorkflowExecutionState, NodeExecutionStatus, NodeExecutionState } from '@/types/workflow.types';
 import { addEdge, applyNodeChanges, applyEdgeChanges, Connection, EdgeChange, NodeChange } from 'reactflow';
 
 interface WorkflowStore {
   workflows: Record<string, WorkflowData>;
   activeWorkflowId: string | null;
   selectedNodeId: string | null;
+  executionStates: Record<string, WorkflowExecutionState>;
 
   // Actions
   createWorkflow: (id: string) => void;
@@ -36,6 +37,15 @@ interface WorkflowStore {
   // Workflow operations
   getWorkflow: (workflowId?: string) => WorkflowData | null;
   clearWorkflow: (workflowId?: string) => void;
+
+  // Execution state operations
+  getExecutionState: (workflowId?: string) => WorkflowExecutionState | null;
+  updateNodeExecutionStatus: (nodeId: string, status: NodeExecutionStatus, error?: string, output?: any, workflowId?: string) => void;
+  setCurrentExecutingNode: (nodeId: string | null, workflowId?: string) => void;
+  addToExecutionPath: (nodeId: string, workflowId?: string) => void;
+  resetExecutionState: (workflowId?: string) => void;
+  setExecutionRunning: (isRunning: boolean, workflowId?: string) => void;
+  setExecutionPaused: (isPaused: boolean, workflowId?: string) => void;
 }
 
 export const useWorkflowStore = create<WorkflowStore>()(
@@ -44,12 +54,23 @@ export const useWorkflowStore = create<WorkflowStore>()(
       workflows: {},
       activeWorkflowId: null,
       selectedNodeId: null,
+      executionStates: {},
 
       createWorkflow: (id) => {
         set((state) => ({
           workflows: {
             ...state.workflows,
             [id]: { nodes: [], edges: [] }
+          },
+          executionStates: {
+            ...state.executionStates,
+            [id]: {
+              isRunning: false,
+              isPaused: false,
+              currentNodeId: null,
+              nodeStates: {},
+              executionPath: []
+            }
           },
           activeWorkflowId: state.activeWorkflowId || id
         }));
@@ -58,8 +79,10 @@ export const useWorkflowStore = create<WorkflowStore>()(
       deleteWorkflow: (id) => {
         set((state) => {
           const { [id]: _, ...rest } = state.workflows;
+          const { [id]: __, ...restExecStates } = state.executionStates;
           return {
             workflows: rest,
+            executionStates: restExecStates,
             activeWorkflowId: state.activeWorkflowId === id ? null : state.activeWorkflowId
           };
         });
@@ -279,6 +302,214 @@ export const useWorkflowStore = create<WorkflowStore>()(
             [id]: { nodes: [], edges: [] }
           }
         }));
+      },
+
+      // Execution state operations
+      getExecutionState: (workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return null;
+        return get().executionStates[id] || null;
+      },
+
+      updateNodeExecutionStatus: (nodeId, status, error, output, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const execState = state.executionStates[id] || {
+            isRunning: false,
+            isPaused: false,
+            currentNodeId: null,
+            nodeStates: {},
+            executionPath: []
+          };
+
+          const nodeState: NodeExecutionState = {
+            nodeId,
+            status,
+            ...(status === NodeExecutionStatus.RUNNING && { startTime: Date.now() }),
+            ...(status === NodeExecutionStatus.COMPLETED || status === NodeExecutionStatus.ERROR
+              ? { endTime: Date.now() }
+              : {}),
+            ...(error && { error }),
+            ...(output !== undefined && { output })
+          };
+
+          // Update node data with execution status
+          const workflow = state.workflows[id];
+          const updatedNodes = workflow?.nodes.map(node =>
+            node.id === nodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    executionStatus: status,
+                    executionError: error,
+                    executionOutput: output
+                  }
+                }
+              : node
+          ) || [];
+
+          return {
+            workflows: {
+              ...state.workflows,
+              [id]: {
+                ...workflow,
+                nodes: updatedNodes
+              }
+            },
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                ...execState,
+                nodeStates: {
+                  ...execState.nodeStates,
+                  [nodeId]: nodeState
+                }
+              }
+            }
+          };
+        });
+      },
+
+      setCurrentExecutingNode: (nodeId, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const execState = state.executionStates[id] || {
+            isRunning: false,
+            isPaused: false,
+            currentNodeId: null,
+            nodeStates: {},
+            executionPath: []
+          };
+
+          return {
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                ...execState,
+                currentNodeId: nodeId
+              }
+            }
+          };
+        });
+      },
+
+      addToExecutionPath: (nodeId, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const execState = state.executionStates[id] || {
+            isRunning: false,
+            isPaused: false,
+            currentNodeId: null,
+            nodeStates: {},
+            executionPath: []
+          };
+
+          return {
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                ...execState,
+                executionPath: [...execState.executionPath, nodeId]
+              }
+            }
+          };
+        });
+      },
+
+      resetExecutionState: (workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          // Reset execution status on all nodes
+          const workflow = state.workflows[id];
+          const resetNodes = workflow?.nodes.map(node => ({
+            ...node,
+            data: {
+              ...node.data,
+              executionStatus: undefined,
+              executionError: undefined,
+              executionOutput: undefined
+            }
+          })) || [];
+
+          return {
+            workflows: {
+              ...state.workflows,
+              [id]: {
+                ...workflow,
+                nodes: resetNodes
+              }
+            },
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                isRunning: false,
+                isPaused: false,
+                currentNodeId: null,
+                nodeStates: {},
+                executionPath: []
+              }
+            }
+          };
+        });
+      },
+
+      setExecutionRunning: (isRunning, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const execState = state.executionStates[id] || {
+            isRunning: false,
+            isPaused: false,
+            currentNodeId: null,
+            nodeStates: {},
+            executionPath: []
+          };
+
+          return {
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                ...execState,
+                isRunning
+              }
+            }
+          };
+        });
+      },
+
+      setExecutionPaused: (isPaused, workflowId) => {
+        const id = workflowId || get().activeWorkflowId;
+        if (!id) return;
+
+        set((state) => {
+          const execState = state.executionStates[id] || {
+            isRunning: false,
+            isPaused: false,
+            currentNodeId: null,
+            nodeStates: {},
+            executionPath: []
+          };
+
+          return {
+            executionStates: {
+              ...state.executionStates,
+              [id]: {
+                ...execState,
+                isPaused
+              }
+            }
+          };
+        });
       }
     }),
     {

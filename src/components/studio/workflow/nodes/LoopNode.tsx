@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { RotateCw } from 'lucide-react';
 import { LoopNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const LoopNode = memo(({ id, data, selected }: NodeProps<LoopNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -20,12 +22,17 @@ export const LoopNode = memo(({ id, data, selected }: NodeProps<LoopNodeData>) =
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[200px] cursor-pointer ${
-        selected ? 'ring-2 ring-purple-500' : ''
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-purple-500 transition-colors`}
-    >
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[200px] cursor-pointer bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-purple-500 transition-colors',
+          selected ? 'ring-2 ring-purple-500' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
       <CardContent className="p-3">
         <div className="flex items-start gap-2 mb-2">
           <div className="p-1.5 bg-purple-500/20 rounded">
@@ -73,6 +80,7 @@ export const LoopNode = memo(({ id, data, selected }: NodeProps<LoopNodeData>) =
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

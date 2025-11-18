@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Circle } from 'lucide-react';
 import { BaseNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -19,12 +21,17 @@ export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[140px] cursor-pointer ${
-        selected ? 'ring-2 ring-node-start' : ''
-      } bg-card border-node-start hover:border-node-start/80 transition-colors`}
-    >
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[140px] cursor-pointer bg-card border-node-start hover:border-node-start/80 transition-colors',
+          selected ? 'ring-2 ring-node-start' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-node-start/20 rounded-full">
@@ -48,6 +55,7 @@ export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Bot, Settings } from 'lucide-react';
 import { AIAgentNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -20,13 +22,18 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[200px] cursor-pointer ${
-        selected ? 'ring-2 ring-nvidia-green' : ''
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-colors`}
-    >
-      <CardContent className="p-3">
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[200px] cursor-pointer bg-nvidia-gray-dark hover:border-nvidia-green transition-colors',
+          selected ? 'ring-2 ring-nvidia-green' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
+        <CardContent className="p-3">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-nvidia-green/20 rounded">
@@ -71,6 +78,7 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

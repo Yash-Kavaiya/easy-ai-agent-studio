@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { GitMerge } from 'lucide-react';
 import { BaseNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const MergeNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -19,12 +21,17 @@ export const MergeNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[160px] cursor-pointer ${
-        selected ? 'ring-2 ring-node-merge' : ''
-      } bg-card border-node-merge hover:border-node-merge/80 transition-colors`}
-    >
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[160px] cursor-pointer bg-card border-node-merge hover:border-node-merge/80 transition-colors',
+          selected ? 'ring-2 ring-node-merge' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
+        )}
+      >
       <CardContent className="p-3">
         <div className="flex items-center gap-2 mb-2">
           <div className="p-1.5 bg-node-merge/20 rounded">
@@ -60,6 +67,7 @@ export const MergeNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
         />
       </CardContent>
     </Card>
+    </div>
   );
 });
 

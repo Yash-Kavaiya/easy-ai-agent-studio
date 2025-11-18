@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CircleDot } from 'lucide-react';
 import { BaseNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
+import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
+import { cn } from '@/lib/utils';
 
 export const EndNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -19,35 +21,41 @@ export const EndNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) =>
   };
 
   return (
-    <Card
-      onClick={handleClick}
-      className={`min-w-[140px] cursor-pointer ${
-        selected ? 'ring-2 ring-node-end' : ''
-      } bg-card border-node-end hover:border-node-end/80 transition-colors`}
-    >
-      <CardContent className="p-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-node-end/20 rounded-full">
-            <CircleDot className="h-4 w-4 text-node-end" />
-          </div>
-          <div className="font-medium text-sm text-node-end">
-            {data.label || 'End'}
-          </div>
-        </div>
-
-        {data.description && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-            {data.description}
-          </p>
+    <div className="relative">
+      <NodeExecutionStatusIndicator status={data.executionStatus} />
+      <Card
+        onClick={handleClick}
+        className={cn(
+          'min-w-[140px] cursor-pointer bg-card border-node-end hover:border-node-end/80 transition-colors',
+          selected ? 'ring-2 ring-node-end' : '',
+          getNodeBorderClass(data.executionStatus),
+          getNodeGlowClass(data.executionStatus)
         )}
+      >
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-node-end/20 rounded-full">
+              <CircleDot className="h-4 w-4 text-node-end" />
+            </div>
+            <div className="font-medium text-sm text-node-end">
+              {data.label || 'End'}
+            </div>
+          </div>
 
-        <Handle
-          type="target"
-          position={Position.Left}
-          className="!bg-node-end !w-3 !h-3 !border-2 !border-card"
-        />
-      </CardContent>
-    </Card>
+          {data.description && (
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+              {data.description}
+            </p>
+          )}
+
+          <Handle
+            type="target"
+            position={Position.Left}
+            className="!bg-node-end !w-3 !h-3 !border-2 !border-card"
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 });
 
