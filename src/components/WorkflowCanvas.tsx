@@ -61,9 +61,10 @@ const initialNodes: WorkflowNode[] = [
 
 interface WorkflowCanvasProps {
   workflowId?: string;
+  onNodeDoubleClick?: (nodeId: string) => void;
 }
 
-export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
+export const WorkflowCanvas = ({ workflowId, onNodeDoubleClick }: WorkflowCanvasProps = {}) => {
   const {
     getNodes,
     setNodes,
@@ -255,6 +256,15 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
+  const handleNodeDoubleClick = useCallback(
+    (_event: React.MouseEvent, node: WorkflowNode) => {
+      if (onNodeDoubleClick) {
+        onNodeDoubleClick(node.id);
+      }
+    },
+    [onNodeDoubleClick]
+  );
+
   return (
     <div className="h-full w-full relative">
       <ReactFlow
@@ -266,6 +276,7 @@ export const WorkflowCanvas = ({ workflowId }: WorkflowCanvasProps = {}) => {
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeDoubleClick={handleNodeDoubleClick}
         onInit={setReactFlowInstance}
         fitView
         defaultEdgeOptions={{

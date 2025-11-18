@@ -46,6 +46,7 @@ export class WorkflowExecutionEngine {
   private edges: WorkflowEdge[];
   private state: ExecutionState;
   private onStateChange?: (state: ExecutionState) => void;
+  private onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void;
   private abortController: AbortController | null = null;
   private workflowId?: string;
 
@@ -54,11 +55,13 @@ export class WorkflowExecutionEngine {
     edges: WorkflowEdge[],
     onStateChange?: (state: ExecutionState) => void,
     workflowId?: string
+    onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void
   ) {
     this.nodes = nodes;
     this.edges = edges;
     this.onStateChange = onStateChange;
     this.workflowId = workflowId;
+    this.onNodeStatusChange = onNodeStatusChange;
     this.state = {
       status: ExecutionStatus.IDLE,
       currentNodeId: null,
@@ -212,6 +215,9 @@ export class WorkflowExecutionEngine {
       store.setCurrentExecutingNode(node.id, this.workflowId);
       store.addToExecutionPath(node.id, this.workflowId);
       store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.RUNNING, undefined, undefined, this.workflowId);
+    // Update node status to running
+    if (this.onNodeStatusChange) {
+      this.onNodeStatusChange(node.id, NodeExecutionStatus.RUNNING);
     }
 
     this.notifyStateChange();
@@ -281,6 +287,9 @@ export class WorkflowExecutionEngine {
       if (this.workflowId) {
         const store = useWorkflowStore.getState();
         store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.COMPLETED, undefined, output, this.workflowId);
+      // Update node status to completed
+      if (this.onNodeStatusChange) {
+        this.onNodeStatusChange(node.id, NodeExecutionStatus.COMPLETED);
       }
 
       // Execute next nodes
@@ -306,6 +315,11 @@ export class WorkflowExecutionEngine {
       return output;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // Update node status to error
+      if (this.onNodeStatusChange) {
+        this.onNodeStatusChange(node.id, NodeExecutionStatus.ERROR, errorMessage);
+      }
 
       this.state.history.push({
         nodeId: node.id,
@@ -538,11 +552,25 @@ export class WorkflowExecutionEngine {
       };
     }
 
+    // Create generator and chunks for search - using simulated embeddings for now
+    const { EmbeddingGenerator } = await import('@/lib/knowledge/embeddings');
+    const { TextChunker } = await import('@/lib/knowledge/chunking');
+    
+    const generator = new EmbeddingGenerator({
+      provider: 'simulated',
+      model: 'simulated',
+      dimensions: 1536
+    });
+    
+    const allChunks = documents.flatMap(doc => 
+      TextChunker.chunkText(doc.content, doc.id, { chunkSize: 512, chunkOverlap: 50 })
+    );
+
     // Perform semantic search
-    const searchInstance = new SemanticSearch(generator);
+    const searchInstance = new SemanticSearch(generator as any);
     const results = await searchInstance.search(
       query,
-      allChunks,
+      allChunks as any,
       documents,
       { topK, threshold }
     );
@@ -550,9 +578,9 @@ export class WorkflowExecutionEngine {
     return {
       query,
       results: results.map(r => ({
-        content: r.chunk.text,
+        content: (r.chunk as any).content || (r.chunk as any).text,
         score: r.score,
-        documentId: r.chunk.documentId
+        documentId: (r.chunk as any).documentId
       }))
     };
   }

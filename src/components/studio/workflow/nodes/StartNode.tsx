@@ -11,6 +11,7 @@ import { BaseNodeData } from '@/types/workflow.types';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { NodeExecutionStatusIndicator, getNodeBorderClass, getNodeGlowClass } from '../NodeExecutionStatus';
 import { cn } from '@/lib/utils';
+import { NodeStatusIndicator, getNodeStatusBorderClass } from './NodeStatusIndicator';
 
 export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) => {
   const setSelectedNode = useWorkflowStore((state) => state.setSelectedNode);
@@ -32,14 +33,21 @@ export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
           getNodeGlowClass(data.executionStatus)
         )}
       >
+    <Card
+      onClick={handleClick}
+      className={`min-w-[140px] cursor-pointer ${
+        getNodeStatusBorderClass(data.executionStatus, selected) || (selected ? 'ring-2 ring-node-start' : '')
+      } bg-card border-node-start hover:border-node-start/80 transition-all`}
+    >
       <CardContent className="p-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-node-start/20 rounded-full">
             <Circle className="h-4 w-4 text-node-start fill-node-start" />
           </div>
-          <div className="font-medium text-sm text-node-start">
+          <div className="flex-1 font-medium text-sm text-node-start">
             {data.label || 'Start'}
           </div>
+          <NodeStatusIndicator status={data.executionStatus} />
         </div>
 
         {data.description && (

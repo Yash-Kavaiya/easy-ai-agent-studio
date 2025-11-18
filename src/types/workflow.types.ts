@@ -53,6 +53,14 @@ export type NodeData =
   | HumanInputNodeData
   | BaseNodeData;
 
+export enum NodeExecutionStatus {
+  IDLE = 'idle',
+  RUNNING = 'running',
+  COMPLETED = 'completed',
+  ERROR = 'error',
+  SKIPPED = 'skipped'
+}
+
 export interface BaseNodeData {
   label: string;
   description?: string;
