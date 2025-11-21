@@ -28,20 +28,13 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
       <Card
         onClick={handleClick}
         className={cn(
-          'min-w-[200px] cursor-pointer bg-nvidia-gray-dark hover:border-nvidia-green transition-colors',
+          'min-w-[200px] cursor-pointer bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-colors',
           selected ? 'ring-2 ring-nvidia-green' : '',
           getNodeBorderClass(data.executionStatus),
           getNodeGlowClass(data.executionStatus)
         )}
       >
         <CardContent className="p-3">
-    <Card
-      onClick={handleClick}
-      className={`min-w-[200px] cursor-pointer ${
-        getNodeStatusBorderClass(data.executionStatus, selected)
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-nvidia-green transition-all`}
-    >
-      <CardContent className="p-3">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-nvidia-green/20 rounded">
@@ -93,8 +86,8 @@ export const AIAgentNode = memo(({ id, data, selected }: NodeProps<AIAgentNodeDa
           position={Position.Right}
           className="!bg-nvidia-green !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
         />
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
     </div>
   );
 });

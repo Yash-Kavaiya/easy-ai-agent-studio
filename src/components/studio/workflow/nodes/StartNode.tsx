@@ -33,13 +33,7 @@ export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
           getNodeGlowClass(data.executionStatus)
         )}
       >
-    <Card
-      onClick={handleClick}
-      className={`min-w-[140px] cursor-pointer ${
-        getNodeStatusBorderClass(data.executionStatus, selected) || (selected ? 'ring-2 ring-node-start' : '')
-      } bg-card border-node-start hover:border-node-start/80 transition-all`}
-    >
-      <CardContent className="p-3">
+        <CardContent className="p-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-node-start/20 rounded-full">
             <Circle className="h-4 w-4 text-node-start fill-node-start" />
@@ -61,8 +55,8 @@ export const StartNode = memo(({ id, data, selected }: NodeProps<BaseNodeData>) 
           position={Position.Right}
           className="!bg-node-start !w-3 !h-3 !border-2 !border-card"
         />
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
     </div>
   );
 });

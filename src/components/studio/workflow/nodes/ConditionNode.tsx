@@ -35,26 +35,6 @@ export const ConditionNode = memo(({ id, data, selected }: NodeProps<ConditionNo
         )}
       >
         <CardContent className="p-3">
-          <div className="flex items-start gap-2 mb-2">
-            <div className="p-1.5 bg-amber-500/20 rounded">
-              <GitBranch className="h-4 w-4 text-amber-500" />
-            </div>
-            <div className="flex-1">
-              <div className="font-medium text-sm text-white">{data.label || 'Condition'}</div>
-              {data.operator && (
-                <div className="text-xs text-muted-foreground capitalize">
-                  {data.operator}
-                </div>
-              )}
-            </div>
-          </div>
-    <Card
-      onClick={handleClick}
-      className={`min-w-[180px] cursor-pointer ${
-        getNodeStatusBorderClass(data.executionStatus, selected) || (selected ? 'ring-2 ring-amber-500' : '')
-      } bg-nvidia-gray-dark border-nvidia-gray-medium hover:border-amber-500 transition-all`}
-    >
-      <CardContent className="p-3">
         <div className="flex items-start gap-2 mb-2">
           <div className="p-1.5 bg-amber-500/20 rounded">
             <GitBranch className="h-4 w-4 text-amber-500" />
@@ -104,10 +84,10 @@ export const ConditionNode = memo(({ id, data, selected }: NodeProps<ConditionNo
             style={{ top: '60%' }}
             className="!bg-red-500 !w-3 !h-3 !border-2 !border-nvidia-gray-dark"
           />
-        </CardContent>
-      </Card>
-    </div>
-  );
-});
+          </CardContent>
+        </Card>
+      </div>
+    );
+  });
 
 ConditionNode.displayName = 'ConditionNode';
