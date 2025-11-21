@@ -54,8 +54,8 @@ export class WorkflowExecutionEngine {
     nodes: WorkflowNode[],
     edges: WorkflowEdge[],
     onStateChange?: (state: ExecutionState) => void,
+    onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void,
     workflowId?: string
-    onNodeStatusChange?: (nodeId: string, status: NodeExecutionStatus, error?: string) => void
   ) {
     this.nodes = nodes;
     this.edges = edges;
@@ -215,6 +215,8 @@ export class WorkflowExecutionEngine {
       store.setCurrentExecutingNode(node.id, this.workflowId);
       store.addToExecutionPath(node.id, this.workflowId);
       store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.RUNNING, undefined, undefined, this.workflowId);
+    }
+    
     // Update node status to running
     if (this.onNodeStatusChange) {
       this.onNodeStatusChange(node.id, NodeExecutionStatus.RUNNING);
@@ -287,6 +289,8 @@ export class WorkflowExecutionEngine {
       if (this.workflowId) {
         const store = useWorkflowStore.getState();
         store.updateNodeExecutionStatus(node.id, NodeExecutionStatus.COMPLETED, undefined, output, this.workflowId);
+      }
+      
       // Update node status to completed
       if (this.onNodeStatusChange) {
         this.onNodeStatusChange(node.id, NodeExecutionStatus.COMPLETED);
