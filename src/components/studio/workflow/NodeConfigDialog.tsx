@@ -44,7 +44,7 @@ export const NodeConfigDialog: React.FC<NodeConfigDialogProps> = ({
   const nodes = getNodes();
   const selectedNode = nodes.find(n => n.id === nodeId);
 
-  const [localData, setLocalData] = useState(selectedNode?.data || {});
+  const [localData, setLocalData] = useState<any>(selectedNode?.data || {});
 
   useEffect(() => {
     if (selectedNode) {

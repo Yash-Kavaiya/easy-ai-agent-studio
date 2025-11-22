@@ -5,7 +5,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { WorkflowNode, WorkflowEdge, WorkflowData, WorkflowExecutionState, NodeExecutionStatus, NodeExecutionState } from '@/types/workflow.types';
-import { WorkflowNode, WorkflowEdge, WorkflowData, NodeExecutionStatus } from '@/types/workflow.types';
 import { addEdge, applyNodeChanges, applyEdgeChanges, Connection, EdgeChange, NodeChange } from 'reactflow';
 
 interface WorkflowStore {
