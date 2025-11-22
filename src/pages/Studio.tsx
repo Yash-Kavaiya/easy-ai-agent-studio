@@ -21,7 +21,6 @@ const Studio = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [configDialogNodeId, setConfigDialogNodeId] = useState<string | null>(null);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
-  const { selectedNodeId, setSelectedNode } = useWorkflowStore();
   const [showTemplates, setShowTemplates] = useState(false);
   const { selectedNodeId, setSelectedNode, clearWorkflow } = useWorkflowStore();
 
@@ -32,6 +31,8 @@ const Studio = () => {
   const handleOpenConfigDialog = (nodeId: string) => {
     setConfigDialogNodeId(nodeId);
     setShowConfigDialog(true);
+  };
+
   const handleClearWorkflow = () => {
     if (confirm('Are you sure you want to clear the current workflow? This action cannot be undone.')) {
       clearWorkflow();
