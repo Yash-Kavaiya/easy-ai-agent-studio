@@ -144,8 +144,8 @@ const Header = () => {
               {isDropdownOpen === 'partners' && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-nvidia-gray-dark border border-nvidia-gray-medium rounded-lg shadow-lg">
                   <div className="py-2">
-                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Technology Partners</a>
-                    <a href="#" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Integration Partners</a>
+                    <Link to="/partners/technology" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Technology Partners</Link>
+                    <Link to="/partners/integration" className="block px-4 py-2 text-gray-300 hover:text-nvidia-green hover:bg-nvidia-gray-medium transition-colors">Integration Partners</Link>
                   </div>
                 </div>
               )}
@@ -204,7 +204,8 @@ const Header = () => {
               <a href="#platform" className="text-white hover:text-nvidia-green transition-colors">Platform</a>
               <Link to="/enterprise" className="text-white hover:text-nvidia-green transition-colors">Enterprise</Link>
               <Link to="/pricing" className="text-white hover:text-nvidia-green transition-colors">Pricing</Link>
-              <a href="#partners" className="text-white hover:text-nvidia-green transition-colors">Partners</a>
+              <Link to="/partners/technology" className="text-white hover:text-nvidia-green transition-colors">Technology Partners</Link>
+              <Link to="/partners/integration" className="text-white hover:text-nvidia-green transition-colors">Integration Partners</Link>
               <a href="#resources" className="text-white hover:text-nvidia-green transition-colors">Resources</a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-nvidia-gray-dark">
                 <Link to="/studio">
