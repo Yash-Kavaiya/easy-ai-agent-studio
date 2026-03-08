@@ -20,7 +20,7 @@ import { KnowledgeNode } from './studio/workflow/nodes/KnowledgeNode';
 import { HumanInputNode } from './studio/workflow/nodes/HumanInputNode';
 import { StartNode } from './studio/workflow/nodes/StartNode';
 import { EndNode } from './studio/workflow/nodes/EndNode';
-import { NodeType, WorkflowNode } from '@/types/workflow.types';
+import { NodeType, WorkflowNode, NodeExecutionStatus } from '@/types/workflow.types';
 
 // Define custom node types
 const nodeTypes: NodeTypes = {
@@ -105,36 +105,51 @@ export const WorkflowCanvas = ({ workflowId, onNodeDoubleClick }: WorkflowCanvas
     let isAnimated = false;
     let strokeColor = 'hsl(var(--primary))';
     let strokeWidth = 2;
+    let className = '';
 
     if (executionState && executionState.isRunning) {
-      const { executionPath, currentNodeId } = executionState;
+      const { executionPath, currentNodeId, nodeStates } = executionState;
 
-      // Animate edges that are part of the execution path
       const sourceIndex = executionPath.indexOf(edge.source);
       const targetIndex = executionPath.indexOf(edge.target);
 
-      // If both source and target are in the path and source comes before target
+      // Completed path segments
       if (sourceIndex !== -1 && targetIndex !== -1 && sourceIndex < targetIndex) {
-        isAnimated = true;
-        strokeColor = 'hsl(var(--nvidia-green))';
-        strokeWidth = 3;
+        const targetState = nodeStates?.[edge.target];
+        if (targetState?.status === NodeExecutionStatus.COMPLETED) {
+          strokeColor = 'hsl(var(--node-start))';
+          strokeWidth = 3;
+          className = 'workflow-edge-completed';
+        } else if (targetState?.status === NodeExecutionStatus.ERROR) {
+          strokeColor = 'hsl(var(--node-end))';
+          strokeWidth = 3;
+          className = 'workflow-edge-error';
+        } else {
+          isAnimated = true;
+          strokeColor = 'hsl(var(--node-ai))';
+          strokeWidth = 3;
+          className = 'workflow-edge-active';
+        }
       }
 
-      // Special highlight for edges from the currently executing node
+      // Active edge from currently executing node
       if (edge.source === currentNodeId) {
         isAnimated = true;
-        strokeColor = 'hsl(var(--nvidia-green))';
+        strokeColor = 'hsl(var(--node-ai))';
         strokeWidth = 4;
+        className = 'workflow-edge-active';
       }
     }
 
     return {
       ...edge,
       animated: isAnimated,
+      className,
       style: {
         ...edge.style,
         stroke: strokeColor,
-        strokeWidth: strokeWidth,
+        strokeWidth,
+        transition: 'stroke 0.3s ease, stroke-width 0.3s ease',
       },
     };
   });

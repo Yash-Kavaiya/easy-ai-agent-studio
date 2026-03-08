@@ -119,37 +119,39 @@ interface NodeBorderIndicatorProps {
 
 export function getNodeBorderClass(status?: NodeExecutionStatus): string {
   if (!status || status === NodeExecutionStatus.IDLE) {
-    return 'border-gray-200';
+    return 'border-border';
   }
 
   switch (status) {
     case NodeExecutionStatus.PENDING:
-      return 'border-gray-300 border-dashed';
+      return 'border-muted-foreground/50 border-dashed';
     case NodeExecutionStatus.RUNNING:
-      return 'border-blue-500 border-2 shadow-lg shadow-blue-200 animate-pulse';
+      return 'border-[hsl(var(--node-ai))] border-2';
     case NodeExecutionStatus.COMPLETED:
-      return 'border-green-500 border-2';
+      return 'border-[hsl(var(--node-start))] border-2';
     case NodeExecutionStatus.ERROR:
-      return 'border-red-500 border-2 shadow-lg shadow-red-200';
+      return 'border-destructive border-2';
     case NodeExecutionStatus.PAUSED:
-      return 'border-yellow-500 border-2';
+      return 'border-[hsl(var(--node-condition))] border-2';
     case NodeExecutionStatus.SKIPPED:
-      return 'border-gray-300 border-dashed opacity-60';
+      return 'border-muted-foreground/30 border-dashed opacity-60';
     default:
-      return 'border-gray-200';
+      return 'border-border';
   }
 }
 
 /**
- * Node Glow Effect
- * Adds a glow effect to running nodes
+ * Node Glow Effect with CSS animation classes
  */
 export function getNodeGlowClass(status?: NodeExecutionStatus): string {
-  if (status === NodeExecutionStatus.RUNNING) {
-    return 'ring-2 ring-blue-400 ring-offset-2';
+  switch (status) {
+    case NodeExecutionStatus.RUNNING:
+      return 'workflow-node-running';
+    case NodeExecutionStatus.COMPLETED:
+      return 'workflow-node-completed';
+    case NodeExecutionStatus.ERROR:
+      return 'workflow-node-error';
+    default:
+      return '';
   }
-  if (status === NodeExecutionStatus.ERROR) {
-    return 'ring-2 ring-red-400 ring-offset-2';
-  }
-  return '';
 }
