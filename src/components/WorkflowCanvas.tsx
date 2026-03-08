@@ -20,7 +20,7 @@ import { KnowledgeNode } from './studio/workflow/nodes/KnowledgeNode';
 import { HumanInputNode } from './studio/workflow/nodes/HumanInputNode';
 import { StartNode } from './studio/workflow/nodes/StartNode';
 import { EndNode } from './studio/workflow/nodes/EndNode';
-import { NodeType, WorkflowNode } from '@/types/workflow.types';
+import { NodeType, WorkflowNode, NodeExecutionStatus } from '@/types/workflow.types';
 
 // Define custom node types
 const nodeTypes: NodeTypes = {
